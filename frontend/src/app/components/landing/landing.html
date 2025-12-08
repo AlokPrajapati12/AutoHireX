@@ -1,0 +1,508 @@
+<div class="landing-container">
+  
+  <!-- Premium Navbar with Blur Effect -->
+  <nav class="navbar">
+    <div class="nav-content">
+      <div class="nav-brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1 class="brand-name">AutoHireX</h1>
+          <span class="brand-tagline">AI Recruitment Platform</span>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#workflow" class="nav-link">Workflow</a>
+        <a href="#technology" class="nav-link">Technology</a>
+        <a href="#benefits" class="nav-link">Benefits</a>
+        <button mat-raised-button color="accent" (click)="goToMonitoring()" class="monitoring-button">
+          <mat-icon>monitor_heart</mat-icon>
+          <span>Monitoring Dashboard</span>
+        </button>
+        <button mat-raised-button color="primary" (click)="startWorkflow()" class="cta-button">
+          <mat-icon>rocket_launch</mat-icon>
+          <span>Create New Job</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section with Premium Design -->
+  <section class="hero-section">
+    <div class="hero-background">
+      <div class="gradient-orb orb-1"></div>
+      <div class="gradient-orb orb-2"></div>
+      <div class="gradient-orb orb-3"></div>
+      <div class="grid-pattern"></div>
+      <div class="animated-particles">
+        <div class="particle" *ngFor="let p of particles" [style.left.%]="p.x" [style.top.%]="p.y" [style.animation-delay.s]="p.delay"></div>
+      </div>
+    </div>
+    
+    <div class="hero-content">
+      <div class="hero-badge">
+        <mat-icon>auto_awesome</mat-icon>
+        <span>Next-Gen AI Recruitment</span>
+        <div class="badge-glow"></div>
+      </div>
+      
+      <h1 class="hero-title">
+        <span class="title-main">AutoHireX</span>
+        <span class="title-sub">Autonomous AI Recruitment System</span>
+        <span class="title-tech">Powered by LangGraph Multi-Agent Orchestration</span>
+      </h1>
+      
+      <p class="hero-description">
+        Revolutionize your talent acquisition with intelligent automation that orchestrates every phase 
+        of hiring—from crafting precision-targeted job descriptions to delivering seamless candidate 
+        onboarding experiences—all driven by advanced AI agents working in perfect harmony.
+      </p>
+      
+      <div class="hero-actions">
+        <button mat-raised-button color="primary" (click)="startWorkflow()" class="primary-cta">
+          <mat-icon>play_arrow</mat-icon>
+          <span>Start Hiring Now</span>
+          <div class="button-glow"></div>
+        </button>
+        <button mat-stroked-button class="secondary-cta">
+          <mat-icon>play_circle</mat-icon>
+          <span>Watch Demo</span>
+        </button>
+      </div>
+      
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-icon">
+            <mat-icon>bolt</mat-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-number">10x</span>
+            <span class="stat-label">Faster Hiring</span>
+          </div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-icon">
+            <mat-icon>psychology</mat-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-number">8+</span>
+            <span class="stat-label">AI Agents</span>
+          </div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-icon">
+            <mat-icon>verified</mat-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-number">95%</span>
+            <span class="stat-label">Match Accuracy</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="trusted-by">
+        <p class="trusted-label">Trusted by Industry Leaders</p>
+        <div class="company-logos">
+          <div class="logo-item">Tech Corp</div>
+          <div class="logo-item">Innovation Labs</div>
+          <div class="logo-item">Future Systems</div>
+          <div class="logo-item">AI Solutions</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section with Enhanced Cards -->
+  <section id="features" class="features-section">
+    <div class="section-header">
+      <span class="section-badge">
+        <mat-icon>stars</mat-icon>
+        <span>Intelligent Features</span>
+      </span>
+      <h2 class="section-title">Complete AI-Powered Recruitment Suite</h2>
+      <p class="section-subtitle">
+        Harness the power of specialized AI agents orchestrated through LangGraph's 
+        cutting-edge multi-agent architecture for unmatched hiring efficiency
+      </p>
+    </div>
+    
+    <div class="features-grid">
+      <div class="feature-card" *ngFor="let feature of features; let i = index" [style.animation-delay.s]="i * 0.1">
+        <div class="feature-glow" [style.background]="feature.gradient"></div>
+        <div class="feature-icon" [style.background]="feature.gradient">
+          <mat-icon>{{ feature.icon }}</mat-icon>
+        </div>
+        <h3 class="feature-title">{{ feature.title }}</h3>
+        <p class="feature-description">{{ feature.description }}</p>
+        <ul class="feature-list">
+          <li *ngFor="let item of feature.items">
+            <mat-icon>check_circle</mat-icon>
+            <span>{{ item }}</span>
+          </li>
+        </ul>
+        <div class="feature-overlay"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Workflow Section with Interactive Timeline -->
+  <section id="workflow" class="workflow-section">
+    <div class="section-header">
+      <span class="section-badge">
+        <mat-icon>account_tree</mat-icon>
+        <span>Autonomous Process</span>
+      </span>
+      <h2 class="section-title">8-Stage AI Orchestration Pipeline</h2>
+      <p class="section-subtitle">
+        Watch as specialized AI agents collaborate seamlessly through each recruitment stage, 
+        automatically optimizing decisions and workflows in real-time
+      </p>
+    </div>
+    
+    <div class="workflow-container">
+      <div class="workflow-timeline">
+        <div class="timeline-line">
+          <div class="timeline-progress"></div>
+        </div>
+        <div class="workflow-steps">
+          <div class="workflow-step" *ngFor="let step of workflowSteps; let i = index" 
+               [class.active]="i === 0"
+               [style.animation-delay.s]="i * 0.15">
+            <div class="step-connector"></div>
+            <div class="step-marker">
+              <div class="step-number">{{ i + 1 }}</div>
+              <div class="step-pulse"></div>
+            </div>
+            <div class="step-card">
+              <div class="step-header">
+                <div class="step-icon">
+                  <mat-icon>{{ step.icon }}</mat-icon>
+                </div>
+                <div class="step-ai-badge">
+                  <mat-icon>smart_toy</mat-icon>
+                  <span>{{ step.aiAgent }}</span>
+                </div>
+              </div>
+              <h4 class="step-title">{{ step.title }}</h4>
+              <p class="step-description">{{ step.description }}</p>
+              <div class="step-status">
+                <mat-icon>check_circle</mat-icon>
+                <span>Autonomous</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="workflow-cta">
+      <div class="cta-card">
+        <mat-icon class="cta-icon">rocket_launch</mat-icon>
+        <h3>Experience the Future of Hiring</h3>
+        <p>See how our AI agents work together to transform your recruitment process</p>
+        <button mat-raised-button color="primary" (click)="startWorkflow()" class="large-cta">
+          <mat-icon>play_arrow</mat-icon>
+          <span>Launch Demo Workflow</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technology Section with Visual Architecture -->
+  <section id="technology" class="technology-section">
+    <div class="tech-container">
+      <div class="tech-content">
+        <span class="section-badge">
+          <mat-icon>hub</mat-icon>
+          <span>Advanced Architecture</span>
+        </span>
+        <h2 class="section-title">LangGraph Multi-Agent Orchestration</h2>
+        <p class="tech-description">
+          Built on LangGraph's revolutionary architecture, AutoHireX deploys a sophisticated network 
+          of specialized AI agents that communicate, collaborate, and coordinate autonomously—delivering 
+          intelligent hiring decisions with unprecedented speed and accuracy.
+        </p>
+        
+        <div class="tech-features">
+          <div class="tech-feature">
+            <div class="tech-feature-icon">
+              <mat-icon>psychology</mat-icon>
+            </div>
+            <div class="tech-feature-content">
+              <h4>Specialized AI Agents</h4>
+              <p>Purpose-built agents for each recruitment stage, working in seamless coordination</p>
+            </div>
+          </div>
+          <div class="tech-feature">
+            <div class="tech-feature-icon">
+              <mat-icon>hub</mat-icon>
+            </div>
+            <div class="tech-feature-content">
+              <h4>LangGraph Orchestration</h4>
+              <p>Advanced state management and intelligent routing between autonomous agents</p>
+            </div>
+          </div>
+          <div class="tech-feature">
+            <div class="tech-feature-icon">
+              <mat-icon>auto_awesome</mat-icon>
+            </div>
+            <div class="tech-feature-content">
+              <h4>Self-Optimizing System</h4>
+              <p>Continuous learning and adaptation with minimal human intervention required</p>
+            </div>
+          </div>
+          <div class="tech-feature">
+            <div class="tech-feature-icon">
+              <mat-icon>insights</mat-icon>
+            </div>
+            <div class="tech-feature-content">
+              <h4>Real-Time Intelligence</h4>
+              <p>Live analytics and performance optimization across all recruitment stages</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="tech-stats">
+          <div class="tech-stat">
+            <span class="tech-stat-number">100%</span>
+            <span class="tech-stat-label">Automated Workflow</span>
+          </div>
+          <div class="tech-stat">
+            <span class="tech-stat-number">24/7</span>
+            <span class="tech-stat-label">Active Processing</span>
+          </div>
+          <div class="tech-stat">
+            <span class="tech-stat-number">∞</span>
+            <span class="tech-stat-label">Scalability</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="tech-visual">
+        <div class="tech-illustration">
+          <div class="central-hub">
+            <div class="hub-icon">
+              <mat-icon>hub</mat-icon>
+            </div>
+            <span class="hub-label">LangGraph</span>
+            <span class="hub-sublabel">Orchestrator</span>
+            <div class="hub-pulse"></div>
+          </div>
+          
+          <div class="agent-node node-1">
+            <mat-icon>psychology</mat-icon>
+            <span>JD Agent</span>
+            <div class="node-pulse"></div>
+          </div>
+          <div class="agent-node node-2">
+            <mat-icon>search</mat-icon>
+            <span>Screen Agent</span>
+            <div class="node-pulse"></div>
+          </div>
+          <div class="agent-node node-3">
+            <mat-icon>analytics</mat-icon>
+            <span>Analysis Agent</span>
+            <div class="node-pulse"></div>
+          </div>
+          <div class="agent-node node-4">
+            <mat-icon>schedule</mat-icon>
+            <span>Schedule Agent</span>
+            <div class="node-pulse"></div>
+          </div>
+          <div class="agent-node node-5">
+            <mat-icon>send</mat-icon>
+            <span>Offer Agent</span>
+            <div class="node-pulse"></div>
+          </div>
+          <div class="agent-node node-6">
+            <mat-icon>how_to_reg</mat-icon>
+            <span>Onboard Agent</span>
+            <div class="node-pulse"></div>
+          </div>
+          
+          <svg class="connection-lines" viewBox="0 0 400 400">
+            <defs>
+              <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#667eea;stop-opacity:0.8" />
+                <stop offset="100%" style="stop-color:#764ba2;stop-opacity:0.8" />
+              </linearGradient>
+              <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#f093fb;stop-opacity:0.8" />
+                <stop offset="100%" style="stop-color:#f5576c;stop-opacity:0.8" />
+              </linearGradient>
+              <linearGradient id="gradient3" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#4facfe;stop-opacity:0.8" />
+                <stop offset="100%" style="stop-color:#00f2fe;stop-opacity:0.8" />
+              </linearGradient>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+            <line x1="100" y1="80" x2="200" y2="200" stroke="url(#gradient1)" stroke-width="2" class="connection-line" style="animation-delay: 0s"/>
+            <line x1="300" y1="80" x2="200" y2="200" stroke="url(#gradient2)" stroke-width="2" class="connection-line" style="animation-delay: 0.2s"/>
+            <line x1="350" y1="200" x2="200" y2="200" stroke="url(#gradient3)" stroke-width="2" class="connection-line" style="animation-delay: 0.4s"/>
+            <line x1="300" y1="320" x2="200" y2="200" stroke="url(#gradient1)" stroke-width="2" class="connection-line" style="animation-delay: 0.6s"/>
+            <line x1="100" y1="320" x2="200" y2="200" stroke="url(#gradient2)" stroke-width="2" class="connection-line" style="animation-delay: 0.8s"/>
+            <line x1="50" y1="200" x2="200" y2="200" stroke="url(#gradient3)" stroke-width="2" class="connection-line" style="animation-delay: 1s"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefits Section -->
+  <section id="benefits" class="benefits-section">
+    <div class="section-header">
+      <span class="section-badge">
+        <mat-icon>trending_up</mat-icon>
+        <span>Why AutoHireX</span>
+      </span>
+      <h2 class="section-title">Transform Your Recruitment ROI</h2>
+      <p class="section-subtitle">
+        Measurable impact across every dimension of your hiring process
+      </p>
+    </div>
+
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <div class="benefit-metric">
+          <span class="metric-value">80%</span>
+          <mat-icon>arrow_upward</mat-icon>
+        </div>
+        <h3>Time Savings</h3>
+        <p>Reduce time-to-hire from weeks to days with autonomous processing</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-metric">
+          <span class="metric-value">90%</span>
+          <mat-icon>arrow_upward</mat-icon>
+        </div>
+        <h3>Quality Improvement</h3>
+        <p>Higher candidate-role fit through AI-powered matching algorithms</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-metric">
+          <span class="metric-value">70%</span>
+          <mat-icon>arrow_downward</mat-icon>
+        </div>
+        <h3>Cost Reduction</h3>
+        <p>Lower recruitment costs with automated workflows and processes</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-metric">
+          <span class="metric-value">100%</span>
+          <mat-icon>verified</mat-icon>
+        </div>
+        <h3>Compliance</h3>
+        <p>Ensure regulatory compliance with built-in validation agents</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA Section -->
+  <section class="cta-section">
+    <div class="cta-background">
+      <div class="cta-orb cta-orb-1"></div>
+      <div class="cta-orb cta-orb-2"></div>
+      <div class="cta-orb cta-orb-3"></div>
+    </div>
+    <div class="cta-content">
+      <mat-icon class="cta-mega-icon">rocket_launch</mat-icon>
+      <h2 class="cta-title">Ready to Revolutionize Your Hiring?</h2>
+      <p class="cta-description">
+        Join forward-thinking companies leveraging autonomous AI to build exceptional teams faster
+      </p>
+      <div class="cta-buttons">
+        <button mat-raised-button color="primary" (click)="startWorkflow()" class="cta-button-large">
+          <mat-icon>play_arrow</mat-icon>
+          <span>Launch AutoHireX Now</span>
+          <div class="button-shine"></div>
+        </button>
+        <button mat-stroked-button class="cta-button-secondary">
+          <mat-icon>calendar_today</mat-icon>
+          <span>Schedule Demo</span>
+        </button>
+      </div>
+      <p class="cta-note">
+        <mat-icon>verified</mat-icon>
+        No credit card required • Free trial available • Setup in minutes
+      </p>
+    </div>
+  </section>
+
+  <!-- Premium Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-main">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>AutoHireX</span>
+          </div>
+          <p class="footer-tagline">Autonomous AI Recruitment System</p>
+          <p class="footer-description">
+            Revolutionizing talent acquisition through LangGraph multi-agent orchestration. 
+            Built for the future of intelligent hiring.
+          </p>
+        </div>
+        
+        <div class="footer-links-grid">
+          <div class="footer-column">
+            <h4>Product</h4>
+            <a href="#features">Features</a>
+            <a href="#workflow">Workflow</a>
+            <a href="#technology">Technology</a>
+            <a href="#benefits">Benefits</a>
+          </div>
+          <div class="footer-column">
+            <h4>Technology</h4>
+            <a href="#">LangGraph</a>
+            <a href="#">AI Agents</a>
+            <a href="#">API Docs</a>
+            <a href="#">Integration</a>
+          </div>
+          <div class="footer-column">
+            <h4>Company</h4>
+            <a href="#">About Us</a>
+            <a href="#">Careers</a>
+            <a href="#">Blog</a>
+            <a href="#">Contact</a>
+          </div>
+          <div class="footer-column">
+            <h4>Legal</h4>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Security</a>
+            <a href="#">Compliance</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; 2025 AutoHireX. All rights reserved.</p>
+      <div class="footer-social">
+        <a href="#" class="social-link"><mat-icon>language</mat-icon></a>
+        <a href="#" class="social-link"><mat-icon>code</mat-icon></a>
+        <a href="#" class="social-link"><mat-icon>business</mat-icon></a>
+      </div>
+    </div>
+  </footer>
+
+</div>

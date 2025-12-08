@@ -1,0 +1,293 @@
+<div class="shortlist-container">
+  <mat-card class="main-card">
+    <!-- Header -->
+    <mat-card-header>
+      <div class="header-content">
+        <mat-icon class="header-icon">auto_awesome</mat-icon>
+        <div>
+          <h2>AI-Powered Candidate Shortlisting</h2>
+          <p class="subtitle">Automated ATS system analyzing candidates in real-time</p>
+        </div>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Processing State - Automatic Background Processing -->
+      <div *ngIf="isProcessing" class="processing-state" [@fadeIn]>
+        <div class="processing-hero">
+          <!-- Animated AI Brain -->
+          <div class="ai-brain-animation">
+            <div class="brain-core">
+              <mat-spinner diameter="120" color="primary"></mat-spinner>
+              <mat-icon class="brain-icon">psychology</mat-icon>
+            </div>
+            <div class="pulse-waves">
+              <div class="wave wave-1"></div>
+              <div class="wave wave-2"></div>
+              <div class="wave wave-3"></div>
+            </div>
+          </div>
+
+          <!-- Status Information -->
+          <div class="status-info">
+            <h3 class="status-title">{{ currentStep }}</h3>
+            <p class="status-details">{{ currentStepDetails }}</p>
+            
+            <!-- Animated Progress Bar -->
+            <div class="progress-container">
+              <div class="progress-header">
+                <span class="progress-label">Overall Progress</span>
+                <span class="progress-percentage">{{ progress }}%</span>
+              </div>
+              <mat-progress-bar 
+                mode="determinate" 
+                [value]="progress"
+                class="custom-progress-bar">
+              </mat-progress-bar>
+            </div>
+
+            <!-- Candidates Counter -->
+            <div class="candidate-counter">
+              <div class="counter-circle">
+                <svg viewBox="0 0 100 100" class="progress-ring">
+                  <circle cx="50" cy="50" r="45" class="progress-ring-bg"/>
+                  <circle 
+                    cx="50" cy="50" r="45" 
+                    class="progress-ring-fill"
+                    [style.strokeDashoffset]="283 - (283 * processedCount / totalCandidates)"/>
+                </svg>
+                <div class="counter-content">
+                  <span class="counter-value">{{ processedCount }}</span>
+                  <span class="counter-separator">/</span>
+                  <span class="counter-total">{{ totalCandidates }}</span>
+                </div>
+              </div>
+              <span class="counter-label">Candidates Processed</span>
+            </div>
+
+            <!-- Processing Steps Indicator -->
+            <div class="steps-indicator">
+              <div class="step" [class.active]="progress >= 10" [class.complete]="progress > 20">
+                <div class="step-icon">
+                  <mat-icon>{{ progress > 20 ? 'check_circle' : 'fiber_manual_record' }}</mat-icon>
+                </div>
+                <span class="step-label">Initialize</span>
+              </div>
+              <div class="step-line" [class.active]="progress >= 20"></div>
+              <div class="step" [class.active]="progress >= 20" [class.complete]="progress > 30">
+                <div class="step-icon">
+                  <mat-icon>{{ progress > 30 ? 'check_circle' : 'fiber_manual_record' }}</mat-icon>
+                </div>
+                <span class="step-label">Load Data</span>
+              </div>
+              <div class="step-line" [class.active]="progress >= 30"></div>
+              <div class="step" [class.active]="progress >= 30" [class.complete]="progress > 80">
+                <div class="step-icon">
+                  <mat-icon>{{ progress > 80 ? 'check_circle' : 'fiber_manual_record' }}</mat-icon>
+                </div>
+                <span class="step-label">AI Analysis</span>
+              </div>
+              <div class="step-line" [class.active]="progress >= 80"></div>
+              <div class="step" [class.active]="progress >= 80" [class.complete]="progress === 100">
+                <div class="step-icon">
+                  <mat-icon>{{ progress === 100 ? 'check_circle' : 'fiber_manual_record' }}</mat-icon>
+                </div>
+                <span class="step-label">Finalize</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results State -->
+      <div *ngIf="processingComplete && !isProcessing" class="results-state" [@fadeIn]>
+        <!-- Success Banner -->
+        <div class="success-banner" [@scaleIn]>
+          <mat-icon class="success-icon">check_circle</mat-icon>
+          <div class="success-content">
+            <h3>Processing Complete!</h3>
+            <p>{{ shortlistedCandidates.length }} candidates shortlisted from {{ totalCandidates }} applications</p>
+          </div>
+        </div>
+
+        <!-- Statistics Dashboard -->
+        <div class="stats-dashboard" *ngIf="shortlistedCandidates.length > 0">
+          <div class="stat-card" [@slideIn]="{ value: '', params: { delay: 100 }}">
+            <mat-icon>people</mat-icon>
+            <div class="stat-info">
+              <span class="stat-number">{{ totalCandidates }}</span>
+              <span class="stat-label">Total Analyzed</span>
+            </div>
+          </div>
+          <div class="stat-card highlight" [@slideIn]="{ value: '', params: { delay: 200 }}">
+            <mat-icon>star</mat-icon>
+            <div class="stat-info">
+              <span class="stat-number">{{ shortlistedCandidates.length }}</span>
+              <span class="stat-label">Shortlisted</span>
+            </div>
+          </div>
+          <div class="stat-card" [@slideIn]="{ value: '', params: { delay: 300 }}">
+            <mat-icon>percent</mat-icon>
+            <div class="stat-info">
+              <span class="stat-number">{{ averageMatchScore }}%</span>
+              <span class="stat-label">Avg Match Score</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- No Candidates Message -->
+        <div *ngIf="shortlistedCandidates.length === 0" class="no-results" [@scaleIn]>
+          <mat-icon class="no-results-icon">info</mat-icon>
+          <h3>No Candidates Met Criteria</h3>
+          <p>The AI analysis found no candidates matching the minimum requirements (50% match score).</p>
+          <p class="suggestion">You may want to adjust the job requirements or review candidates manually.</p>
+          <button mat-raised-button color="primary" (click)="goBack()" class="back-button">
+            <mat-icon>arrow_back</mat-icon>
+            Go Back
+          </button>
+        </div>
+
+        <!-- Shortlisted Candidates List -->
+        <div *ngIf="shortlistedCandidates.length > 0" class="candidates-section">
+          <h3 class="section-title">
+            <mat-icon>star</mat-icon>
+            Shortlisted Candidates
+          </h3>
+
+          <div class="candidates-list">
+            <mat-card 
+              class="candidate-card" 
+              *ngFor="let candidate of shortlistedCandidates; let i = index"
+              [@slideIn]="{ value: '', params: { delay: i * 100 }}">
+              
+              <div class="candidate-header">
+                <div class="rank-badge" [class.top-rank]="i < 3">
+                  <span class="rank-number">#{{ i + 1 }}</span>
+                  <mat-icon *ngIf="i === 0" class="trophy">emoji_events</mat-icon>
+                </div>
+                
+                <div class="candidate-info">
+                  <h4 class="candidate-name">{{ candidate.candidateName }}</h4>
+                  <p class="candidate-email">{{ candidate.candidateEmail }}</p>
+                </div>
+                
+                <div class="match-score" [ngClass]="getMatchScoreClass(candidate.matchScore)">
+                  <mat-icon>verified</mat-icon>
+                  <span class="score-value">{{ candidate.matchScore }}%</span>
+                  <span class="score-label">Match</span>
+                </div>
+              </div>
+
+              <div class="candidate-details">
+                <!-- Matched Skills -->
+                <div class="skills-section" *ngIf="candidate.matchedSkills && candidate.matchedSkills.length > 0">
+                  <label>
+                    <mat-icon>check</mat-icon>
+                    Matched Skills ({{ candidate.matchedSkills.length }})
+                  </label>
+                  <mat-chip-set>
+                    <mat-chip *ngFor="let skill of candidate.matchedSkills.slice(0, 5)" class="skill-chip matched">
+                      {{ skill }}
+                    </mat-chip>
+                    <mat-chip *ngIf="candidate.matchedSkills.length > 5" class="more-chip">
+                      +{{ candidate.matchedSkills.length - 5 }} more
+                    </mat-chip>
+                  </mat-chip-set>
+                </div>
+
+                <!-- Missing Skills -->
+                <div class="skills-section" *ngIf="candidate.missingSkills && candidate.missingSkills.length > 0">
+                  <label>
+                    <mat-icon>info</mat-icon>
+                    Development Areas ({{ candidate.missingSkills.length }})
+                  </label>
+                  <mat-chip-set>
+                    <mat-chip *ngFor="let skill of candidate.missingSkills.slice(0, 3)" class="skill-chip missing">
+                      {{ skill }}
+                    </mat-chip>
+                    <mat-chip *ngIf="candidate.missingSkills.length > 3" class="more-chip">
+                      +{{ candidate.missingSkills.length - 3 }} more
+                    </mat-chip>
+                  </mat-chip-set>
+                </div>
+
+                <!-- AI Recommendation -->
+                <div class="recommendation">
+                  <mat-icon>lightbulb</mat-icon>
+                  <div class="recommendation-content">
+                    <p class="recommendation-text">{{ candidate.recommendation }}</p>
+                    <span class="ai-decision" *ngIf="candidate.llmDecision">
+                      <strong>AI Decision:</strong> {{ candidate.llmDecision }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </mat-card>
+          </div>
+        </div>
+
+        <!-- Interview Scheduling Options -->
+        <div *ngIf="shortlistedCandidates.length > 0" class="interview-options" [@fadeIn]>
+          <div class="options-header">
+            <mat-icon class="options-icon">calendar_today</mat-icon>
+            <div>
+              <h3>Schedule Interviews</h3>
+              <p>Choose how you want to conduct interviews with shortlisted candidates</p>
+            </div>
+          </div>
+
+          <div class="interview-buttons">
+            <!-- Manual Interview by HR -->
+            <div class="interview-option">
+              <div class="option-card manual-option">
+                <div class="option-icon">
+                  <mat-icon>person</mat-icon>
+                </div>
+                <h4>Manual Interview by HR</h4>
+                <p>Schedule interviews with your HR team. You'll select dates and conduct interviews yourself.</p>
+                <ul class="option-features">
+                  <li><mat-icon>check</mat-icon> Personal touch</li>
+                  <li><mat-icon>check</mat-icon> Flexible scheduling</li>
+                  <li><mat-icon>check</mat-icon> Direct interaction</li>
+                </ul>
+                <button 
+                  mat-raised-button 
+                  color="primary"
+                  class="schedule-button"
+                  (click)="scheduleManualInterview()">
+                  <mat-icon>calendar_month</mat-icon>
+                  Schedule Manual Interview
+                </button>
+              </div>
+            </div>
+
+            <!-- Voice AI Agent Interview -->
+            <div class="interview-option">
+              <div class="option-card ai-option">
+                <div class="option-icon ai-icon">
+                  <mat-icon>smart_toy</mat-icon>
+                </div>
+                <div class="ai-badge">AI-Powered</div>
+                <h4>Voice AI Agent Interview</h4>
+                <p>Automated AI conducts 3-round interviews (Technical, Behavioral, HR) and provides detailed reports.</p>
+                <ul class="option-features">
+                  <li><mat-icon>check</mat-icon> Automated 3 rounds</li>
+                  <li><mat-icon>check</mat-icon> Instant scheduling</li>
+                  <li><mat-icon>check</mat-icon> AI evaluation report</li>
+                </ul>
+                <button 
+                  mat-raised-button 
+                  color="accent"
+                  class="schedule-button ai-button"
+                  (click)="scheduleVoiceAIInterview()">
+                  <mat-icon>psychology</mat-icon>
+                  Start AI Interview
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

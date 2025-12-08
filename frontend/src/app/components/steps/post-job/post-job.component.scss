@@ -1,0 +1,244 @@
+.post-job-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 30px;
+
+  h2 {
+    color: #1a202c;
+    font-size: 2.4rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #10b981, #059669);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+  }
+
+  .subtitle {
+    color: #64748b;
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+  }
+}
+
+/* ------------------------------
+   Job Preview Card
+------------------------------ */
+.preview-card {
+  margin-bottom: 30px;
+  border-radius: 20px;
+  border: 2px solid rgba(59, 130, 246, 0.15);
+  box-shadow: 0 10px 35px rgba(59, 130, 246, 0.15);
+
+  mat-card-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    .header-icon {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+      font-size: 28px;
+      width: 55px;
+      height: 55px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+    }
+  }
+}
+
+.job-preview {
+  background: #f0f9ff;
+  border-radius: 16px;
+  padding: 25px;
+  border: 2px solid #93c5fd;
+
+  .job-header {
+    border-bottom: 2px solid #3b82f6;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+
+    h3 {
+      color: #1e40af;
+      font-size: 1.8rem;
+      margin-bottom: 5px;
+    }
+
+    .company {
+      font-size: 1.2rem;
+      color: #2563eb;
+      font-weight: 600;
+    }
+  }
+
+  .job-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #1e293b;
+      font-weight: 500;
+
+      mat-icon {
+        color: #3b82f6;
+      }
+    }
+  }
+
+  .job-description {
+    margin-top: 25px;
+
+    h4 {
+      font-size: 1.3rem;
+      color: #1e40af;
+      margin-bottom: 10px;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      font-size: 1rem;
+      line-height: 1.7;
+      color: #334155;
+    }
+  }
+}
+
+/* ------------------------------
+   Success Card
+------------------------------ */
+.success-card {
+  border: 2px solid #10b981;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(16, 185, 129, 0.25);
+  animation: fadeInUp 0.5s ease-out;
+
+  mat-card-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    .success-icon {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      width: 55px;
+      height: 55px;
+      border-radius: 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 30px;
+    }
+  }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.url-section {
+  margin-bottom: 25px;
+
+  label {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .url-container {
+    display: flex;
+    background: #f8fafc;
+    border: 2px solid #10b981;
+    border-radius: 10px;
+    padding: 10px;
+    gap: 10px;
+
+    .url-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-weight: 500;
+      font-size: 1rem;
+    }
+  }
+
+  .hint {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #475569;
+  }
+}
+
+/* ------------------------------
+   Next Step section
+------------------------------ */
+.next-steps {
+  background: #ecfdf5;
+  border-left: 4px solid #10b981;
+  padding: 18px;
+  margin-top: 25px;
+  border-radius: 12px;
+
+  h4 {
+    font-size: 1.2rem;
+    color: #065f46;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  ul {
+    padding-left: 20px;
+
+    li {
+      color: #047857;
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+  }
+}
+
+.success-actions {
+  margin-top: 20px;
+
+  button {
+    height: 52px !important;
+  }
+}
+
+/* ------------------------------
+  NO DATA Section
+------------------------------ */
+.no-data {
+  text-align: center;
+  padding: 50px 20px;
+
+  mat-icon {
+    font-size: 80px;
+    color: #f59e0b;
+    margin-bottom: 15px;
+  }
+
+  h3 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+  }
+
+  p {
+    color: #64748b;
+    margin-bottom: 20px;
+  }
+}
+
+/* Snackbar styles */
+::ng-deep .success-snackbar {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  color: white !important;
+}

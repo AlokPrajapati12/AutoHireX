@@ -1,0 +1,70 @@
+<div class="container">
+  <h2>Review & Approve Job Description</h2>
+  <p class="subtitle">Review the generated job description and make any necessary edits before posting.</p>
+
+  <div *ngIf="jobData$ | async as jobData" class="content">
+    
+    <!-- Generated Job Description Card -->
+    <mat-card class="description-card">
+      <mat-card-header class="custom-header">
+        <div class="header-left">
+          <mat-icon>description</mat-icon>
+          <mat-card-title>Job Description</mat-card-title>
+        </div>
+        <div class="header-right">
+          <button mat-stroked-button color="primary" (click)="toggleEdit()" *ngIf="!isEditing">
+            <mat-icon>edit</mat-icon>
+            Edit
+          </button>
+          <button mat-stroked-button color="accent" (click)="saveEdits()" *ngIf="isEditing">
+            <mat-icon>save</mat-icon>
+            Save Changes
+          </button>
+        </div>
+      </mat-card-header>
+
+      <mat-card-content>
+
+        <!-- EDIT MODE -->
+        <textarea 
+          *ngIf="isEditing"
+          [(ngModel)]="jobData.jobDescription"
+          class="edit-textarea"
+          rows="20">
+        </textarea>
+
+       <pre *ngIf="!isEditing" class="job-description">
+ {{ jobData?.jobDescription || jobData?.['description'] }}
+</pre>
+
+
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Save Button -->
+    <div class="action-buttons">
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="saveJobDescription()"
+        [disabled]="isSaving"
+        class="approve-button">
+
+        <mat-spinner *ngIf="isSaving" diameter="20" class="spinner-inline"></mat-spinner>
+        <mat-icon *ngIf="!isSaving">save</mat-icon>
+
+        {{ isSaving ? 'Saving to Database...' : 'Save Job Description' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- NO DATA -->
+  <div *ngIf="!(jobData$ | async)" class="no-data">
+    <mat-icon>warning</mat-icon>
+    <p>No job data available. Please go back and create a job first.</p>
+    <button mat-raised-button color="primary" (click)="goToPrevious()">
+      <mat-icon>arrow_back</mat-icon>
+      Go Back
+    </button>
+  </div>
+</div>

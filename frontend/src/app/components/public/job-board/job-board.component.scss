@@ -1,0 +1,295 @@
+.job-board-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+// Hero Section
+.hero-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 80px 20px 60px;
+  text-align: center;
+
+  .hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+
+    h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 15px;
+      text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+      @media (max-width: 768px) {
+        font-size: 2.5rem;
+      }
+    }
+
+    p {
+      font-size: 1.3rem;
+      margin-bottom: 40px;
+      opacity: 0.95;
+    }
+  }
+}
+
+.search-bar {
+  display: flex;
+  gap: 15px;
+  max-width: 700px;
+  margin: 0 auto;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+
+  .search-field {
+    flex: 1;
+    
+    ::ng-deep {
+      .mat-mdc-text-field-wrapper {
+        background: white;
+        border-radius: 12px;
+      }
+
+      .mat-mdc-form-field-focus-overlay {
+        background-color: transparent;
+      }
+    }
+  }
+
+  button {
+    height: 56px;
+    padding: 0 40px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+  }
+}
+
+// Jobs Section
+.jobs-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.section-header {
+  margin-bottom: 30px;
+
+  h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 5px;
+  }
+
+  .job-count {
+    color: #64748b;
+    font-size: 1.1rem;
+  }
+}
+
+// Jobs Grid
+.jobs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 25px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.job-card {
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 2px solid transparent;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(102, 126, 234, 0.2);
+    border-color: #667eea;
+  }
+
+  mat-card-content {
+    padding: 24px;
+  }
+}
+
+.job-card-header {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+
+  .company-logo {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    mat-icon {
+      color: white;
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  .job-info {
+    flex: 1;
+    min-width: 0;
+
+    h3 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #1a202c;
+      margin: 0 0 5px 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .company-name {
+      color: #667eea;
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin: 0;
+    }
+  }
+}
+
+.job-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 15px;
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #64748b;
+    font-size: 0.95rem;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #94a3b8;
+    }
+  }
+}
+
+.job-description-preview {
+  color: #475569;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+}
+
+.job-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 15px;
+  border-top: 1px solid #e2e8f0;
+
+  mat-chip-set {
+    display: flex;
+    gap: 8px;
+  }
+
+  mat-chip {
+    font-size: 0.85rem;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+    }
+  }
+
+  button {
+    mat-icon {
+      margin-left: 6px;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+// Loading State
+.loading {
+  text-align: center;
+  padding: 80px 20px;
+  color: #64748b;
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 20px;
+    animation: spin 2s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  p {
+    font-size: 1.2rem;
+  }
+}
+
+// Empty State
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+
+  mat-icon {
+    font-size: 80px;
+    width: 80px;
+    height: 80px;
+    color: #cbd5e1;
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    color: #1e293b;
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+  }
+
+  p {
+    color: #64748b;
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+  }
+
+  button {
+    padding: 0 30px;
+    height: 48px;
+  }
+}
+
+// Material Overrides
+::ng-deep {
+  .mat-mdc-chip {
+    border-radius: 8px !important;
+  }
+}

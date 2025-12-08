@@ -1,0 +1,66 @@
+# ===================================
+# AutoHireX .gitignore
+# ===================================
+
+# ===== Environment Variables =====
+.env
+*.env
+.env.local
+.env.production
+
+# ===== Sensitive Files =====
+service-account.json
+*.pem
+*.key
+*.cert
+
+# ===== Node/Angular =====
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# ===== Java/Spring Boot =====
+backend/target/
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+backend/*.jar
+backend/*.war
+backend/*.class
+backend/.classpath
+backend/.project
+backend/.settings/
+
+# ===== Python =====
+ai-service/__pycache__/
+ai-service/*.pyc
+ai-service/*.pyo
+ai-service/tts_env/
+ai-service/venv/
+ai-service/model_cache/
+ai-service/*.egg-info/
+
+# ===== IDEs =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ===== Database =====
+*.db
+*.sqlite
+*.log
+
+# ===== Build Files =====
+*.zip
+*.tar.gz
+*.rar
+
+# ===== OS Files =====
+Thumbs.db
+desktop.ini

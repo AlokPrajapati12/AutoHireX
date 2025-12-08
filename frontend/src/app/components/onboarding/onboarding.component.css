@@ -1,0 +1,153 @@
+/* Onboarding Component Styles */
+
+/* Smooth animations */
+* {
+  transition: all 0.3s ease;
+}
+
+/* Modal backdrop animation */
+.fixed.inset-0 {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Card hover effect */
+.shadow-md:hover {
+  transform: translateY(-4px);
+}
+
+/* Progress bar animation */
+.rounded-full {
+  transition: width 0.5s ease;
+}
+
+/* Button ripple effect */
+button:active {
+  transform: scale(0.98);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Loading spinner */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Fade in animation for list items */
+.space-y-4 > div {
+  animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Status badge pulse for pending */
+.bg-yellow-100 {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* File input styling */
+input[type="file"]::-webkit-file-upload-button {
+  padding: 0.5rem 1rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+input[type="file"]::-webkit-file-upload-button:hover {
+  background-color: #2563eb;
+}
+
+/* Checkbox custom styling */
+input[type="checkbox"]:checked {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+/* Focus ring enhancement */
+*:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+/* Modal slide animation */
+.fixed > div {
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive grid improvements */
+@media (max-width: 768px) {
+  .grid-cols-2 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}
+
+/* Print styles */
+@media print {
+  button, .fixed {
+    display: none !important;
+  }
+}

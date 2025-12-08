@@ -1,0 +1,226 @@
+<div class="job-details-container">
+  <!-- Loading State -->
+  <div class="loading" *ngIf="isLoading">
+    <mat-icon>hourglass_empty</mat-icon>
+    <p>Loading job details...</p>
+  </div>
+
+  <!-- Job Details -->
+  <div class="content" *ngIf="!isLoading && job">
+    <!-- Job Header -->
+    <div class="job-header-section">
+      <div class="company-logo">
+        <mat-icon>business</mat-icon>
+      </div>
+      <div class="header-content">
+        <h1>{{ job.title }}</h1>
+        <h2>{{ job.company }}</h2>
+        <div class="job-meta">
+          <div class="meta-item">
+            <mat-icon>location_on</mat-icon>
+            <span>{{ job.location }}</span>
+          </div>
+          <div class="meta-item">
+            <mat-icon>work</mat-icon>
+            <span>{{ job.employmentType }}</span>
+          </div>
+          <div class="meta-item">
+            <mat-icon>trending_up</mat-icon>
+            <span>{{ job.experienceLevel }} Level</span>
+          </div>
+          <div class="meta-item" *ngIf="job.salaryRange">
+            <mat-icon>attach_money</mat-icon>
+            <span>{{ job.salaryRange }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Left Column: Job Details -->
+      <div class="left-column">
+        <mat-card class="description-card">
+          <mat-card-header>
+            <mat-icon>description</mat-icon>
+            <mat-card-title>Job Description</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <pre class="job-description">{{ job.description }}</pre>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="skills-card" *ngIf="job.requiredSkills">
+          <mat-card-header>
+            <mat-icon>code</mat-icon>
+            <mat-card-title>Required Skills</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="skills-list">
+              <span class="skill-chip" *ngFor="let skill of job.requiredSkills.split(',')">
+                {{ skill.trim() }}
+              </span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Right Column: Application Form -->
+      <div class="right-column">
+        <!-- Job Full Message -->
+        <mat-card class="info-card" *ngIf="job.maxCandidates && job.applicationCount >= job.maxCandidates">
+          <mat-card-content>
+            <div class="info-content">
+              <mat-icon class="warning-icon">info</mat-icon>
+              <h3>Applications Closed</h3>
+              <p>This job has reached its maximum number of candidates ({{ job.maxCandidates }} applicants).</p>
+              <p>We are no longer accepting applications for this position.</p>
+              <button mat-raised-button color="primary" routerLink="/jobs">
+                <mat-icon>search</mat-icon>
+                Browse Other Jobs
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Application Form (Only show if not full and not submitted) -->
+        <mat-card class="application-card" *ngIf="(!job.maxCandidates || job.applicationCount < job.maxCandidates) && !applicationSubmitted">
+          <mat-card-header>
+            <mat-icon>send</mat-icon>
+            <mat-card-title>Apply for this Position</mat-card-title>
+            <mat-card-subtitle *ngIf="job.maxCandidates">
+              <span class="spots-remaining">
+                <mat-icon>people</mat-icon>
+                {{ job.maxCandidates - job.applicationCount }} spots remaining out of {{ job.maxCandidates }}
+              </span>
+            </mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <form [formGroup]="applicationForm" (ngSubmit)="submitApplication()">
+              <!-- Full Name -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Full Name *</mat-label>
+                <input matInput formControlName="fullName" placeholder="John Doe">
+                <mat-icon matPrefix>person</mat-icon>
+                <mat-error *ngIf="applicationForm.get('fullName')?.hasError('required')">
+                  Name is required
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Email -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Email *</mat-label>
+                <input matInput type="email" formControlName="email" placeholder="john@example.com">
+                <mat-icon matPrefix>email</mat-icon>
+                <mat-error *ngIf="applicationForm.get('email')?.hasError('required')">
+                  Email is required
+                </mat-error>
+                <mat-error *ngIf="applicationForm.get('email')?.hasError('email')">
+                  Invalid email format
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Phone -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Phone Number *</mat-label>
+                <input matInput formControlName="phone" placeholder="1234567890">
+                <mat-icon matPrefix>phone</mat-icon>
+                <mat-error *ngIf="applicationForm.get('phone')?.hasError('required')">
+                  Phone is required
+                </mat-error>
+                <mat-error *ngIf="applicationForm.get('phone')?.hasError('pattern')">
+                  Invalid phone format (10 digits)
+                </mat-error>
+              </mat-form-field>
+
+              <!-- LinkedIn -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>LinkedIn Profile</mat-label>
+                <input matInput formControlName="linkedIn" placeholder="https://linkedin.com/in/yourprofile">
+                <mat-icon matPrefix>link</mat-icon>
+              </mat-form-field>
+
+              <!-- Years of Experience -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Years of Experience *</mat-label>
+                <input matInput type="number" formControlName="yearsOfExperience" placeholder="5">
+                <mat-icon matPrefix>work_history</mat-icon>
+                <mat-error>Years of experience is required</mat-error>
+              </mat-form-field>
+
+              <!-- Cover Letter (Optional) -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Cover Letter (Optional)</mat-label>
+                <textarea 
+                  matInput 
+                  formControlName="coverLetter" 
+                  rows="5" 
+                  placeholder="Tell us why you're a great fit for this position... (optional)"></textarea>
+                <mat-icon matPrefix>edit_note</mat-icon>
+                <mat-hint>Optional: Add a cover letter to stand out</mat-hint>
+              </mat-form-field>
+
+              <!-- Resume Upload -->
+              <div class="file-upload-section">
+                <label class="file-label">Upload Resume *</label>
+                <div class="file-upload-container">
+                  <input 
+                    type="file" 
+                    #fileInput 
+                    (change)="onFileSelected($event)" 
+                    accept=".pdf,.doc,.docx"
+                    style="display: none">
+                  
+                  <button 
+                    type="button" 
+                    mat-stroked-button 
+                    color="primary"
+                    (click)="fileInput.click()">
+                    <mat-icon>upload_file</mat-icon>
+                    Choose File
+                  </button>
+
+                  <div class="file-info" *ngIf="selectedFile">
+                    <mat-icon>description</mat-icon>
+                    <span class="file-name">{{ selectedFile.name }}</span>
+                    <span class="file-size">({{ getFileSize() }})</span>
+                  </div>
+                </div>
+                <p class="file-hint">PDF or Word document (Max 5MB)</p>
+              </div>
+
+              <div class="form-actions">
+            <button 
+              mat-raised-button 
+              color="accent" 
+              type="button"
+              class="submit-button"
+              (click)="onButtonClick()"
+              [disabled]="isSubmitting || applicationForm.invalid || !selectedFile">
+              <mat-spinner *ngIf="isSubmitting" diameter="20" class="spinner-inline"></mat-spinner>
+              <mat-icon *ngIf="!isSubmitting">send</mat-icon>
+              {{ isSubmitting ? 'Submitting Application...' : 'Submit Application' }}
+            </button>
+          </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Success Message -->
+        <mat-card class="success-card" *ngIf="applicationSubmitted">
+          <mat-card-content>
+            <div class="success-content">
+              <mat-icon class="success-icon">check_circle</mat-icon>
+              <h3>Application Submitted!</h3>
+              <p>Thank you for applying. We'll review your application and get back to you soon.</p>
+              <button mat-raised-button color="primary" routerLink="/jobs">
+                <mat-icon>arrow_back</mat-icon>
+                Browse More Jobs
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>

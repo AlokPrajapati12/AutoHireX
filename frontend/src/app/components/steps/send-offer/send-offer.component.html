@@ -1,0 +1,461 @@
+<div class="send-offer-container">
+  <!-- Header -->
+  <div class="header">
+    <h1>📧 Offer Letter Management</h1>
+    <p class="subtitle">Generate and send offer letters to selected candidates</p>
+  </div>
+
+  <!-- Success Message -->
+  <div *ngIf="showSuccessMessage" class="alert alert-success">
+    <i class="fas fa-check-circle"></i> {{ successMessage }}
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    <i class="fas fa-exclamation-circle"></i> {{ errorMessage }}
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button 
+      [class.active]="activeTab === 'eligible'" 
+      (click)="switchTab('eligible')"
+      class="tab-button">
+      <i class="fas fa-user-check"></i> Eligible Candidates ({{ eligibleCandidates.length }})
+    </button>
+    <button 
+      [class.active]="activeTab === 'generated'" 
+      (click)="switchTab('generated')"
+      class="tab-button">
+      <i class="fas fa-file-alt"></i> Generated Offers ({{ offerLetters.length }})
+    </button>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Loading...</p>
+  </div>
+
+  <!-- Tab: Eligible Candidates -->
+  <div *ngIf="activeTab === 'eligible' && !loading" class="tab-content">
+    <div class="section-header">
+      <h2>Candidates Eligible for Offer Letter</h2>
+      <p>These candidates have successfully cleared all interview rounds</p>
+    </div>
+
+    <div *ngIf="eligibleCandidates.length === 0" class="empty-state">
+      <i class="fas fa-inbox fa-3x"></i>
+      <p>No eligible candidates found</p>
+      <small>Candidates who clear HR round will appear here</small>
+    </div>
+
+    <div class="candidates-grid" *ngIf="eligibleCandidates.length > 0">
+      <div *ngFor="let candidate of eligibleCandidates" class="candidate-card">
+        <div class="card-header">
+          <div class="candidate-info">
+            <i class="fas fa-user-circle fa-2x"></i>
+            <div>
+              <h3>{{ candidate.candidateName }}</h3>
+              <p class="email">{{ candidate.candidateEmail }}</p>
+            </div>
+          </div>
+          <span class="score-badge">Score: {{ candidate.finalScore }}/100</span>
+        </div>
+
+        <div class="card-body">
+          <div class="info-row">
+            <i class="fas fa-briefcase"></i>
+            <span>{{ candidate.jobTitle }}</span>
+          </div>
+          <div class="info-row">
+            <i class="fas fa-building"></i>
+            <span>{{ candidate.company }}</span>
+          </div>
+          <div class="info-row">
+            <i class="fas fa-phone"></i>
+            <span>{{ candidate.candidatePhone }}</span>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <button 
+            class="btn btn-primary"
+            (click)="openGenerateModal(candidate)"
+            [disabled]="candidate.offerLetterGenerated">
+            <i class="fas fa-file-signature"></i>
+            {{ candidate.offerLetterGenerated ? 'Offer Generated' : 'Generate Offer Letter' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab: Generated Offers -->
+  <div *ngIf="activeTab === 'generated' && !loading" class="tab-content">
+    <div class="section-header">
+      <h2>Generated Offer Letters</h2>
+      <div class="filter-section">
+        <label>Filter by Status:</label>
+        <select [(ngModel)]="filterStatus" class="status-filter">
+          <option value="ALL">All Statuses</option>
+          <option value="GENERATED">Generated</option>
+          <option value="SENT">Sent</option>
+          <option value="ACCEPTED">Accepted</option>
+          <option value="REJECTED">Rejected</option>
+          <option value="EXPIRED">Expired</option>
+        </select>
+      </div>
+    </div>
+
+    <div *ngIf="getFilteredOfferLetters().length === 0" class="empty-state">
+      <i class="fas fa-inbox fa-3x"></i>
+      <p>No offer letters found</p>
+      <small>Generated offer letters will appear here</small>
+    </div>
+
+    <div class="offers-table" *ngIf="getFilteredOfferLetters().length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>Offer #</th>
+            <th>Candidate</th>
+            <th>Job Title</th>
+            <th>CTC</th>
+            <th>Joining Date</th>
+            <th>Status</th>
+            <th>Generated On</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let offer of getFilteredOfferLetters()">
+            <td><strong>{{ offer.offerLetterNumber }}</strong></td>
+            <td>
+              <div class="candidate-cell">
+                <strong>{{ offer.candidateName }}</strong>
+                <small>{{ offer.candidateEmail }}</small>
+              </div>
+            </td>
+            <td>{{ offer.jobTitle }}</td>
+            <td>
+              <strong>{{ formatCurrency(offer.annualCtc, offer.currency) }}</strong>
+            </td>
+            <td>{{ offer.joiningDate | date: 'dd MMM yyyy' }}</td>
+            <td>
+              <span [class]="'badge ' + getStatusBadgeClass(offer.status)">
+                {{ offer.status }}
+              </span>
+            </td>
+            <td>{{ offer.generatedAt | date: 'dd MMM yyyy' }}</td>
+            <td>
+              <div class="action-buttons">
+                <button 
+                  class="btn-icon btn-view" 
+                  (click)="viewOfferLetter(offer)"
+                  title="View Details">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button 
+                  *ngIf="offer.status === 'GENERATED'"
+                  class="btn-icon btn-send" 
+                  (click)="sendOfferLetter(offer.id)"
+                  title="Send to Candidate">
+                  <i class="fas fa-paper-plane"></i>
+                </button>
+                <button 
+                  class="btn-icon btn-download" 
+                  (click)="downloadOfferLetter(offer.id)"
+                  title="Download PDF">
+                  <i class="fas fa-download"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Generate Offer Letter -->
+<div *ngIf="showGenerateModal" class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content large" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2><i class="fas fa-file-signature"></i> Generate Offer Letter</h2>
+      <button class="close-btn" (click)="closeModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div *ngIf="selectedCandidate" class="candidate-summary">
+        <h3>{{ selectedCandidate.candidateName }}</h3>
+        <p>{{ selectedCandidate.candidateEmail }} | {{ selectedCandidate.jobTitle }}</p>
+      </div>
+
+      <form class="offer-form">
+        <!-- Employment Details -->
+        <div class="form-section">
+          <h4>📋 Employment Details</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Joining Date *</label>
+              <input 
+                type="date" 
+                [(ngModel)]="offerLetterForm.joiningDate" 
+                name="joiningDate"
+                required>
+            </div>
+            <div class="form-group">
+              <label>Employment Type *</label>
+              <select [(ngModel)]="offerLetterForm.employmentType" name="employmentType">
+                <option value="FULL_TIME">Full Time</option>
+                <option value="PART_TIME">Part Time</option>
+                <option value="CONTRACT">Contract</option>
+                <option value="INTERNSHIP">Internship</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Work Location *</label>
+              <select [(ngModel)]="offerLetterForm.workLocation" name="workLocation">
+                <option value="ONSITE">Onsite</option>
+                <option value="REMOTE">Remote</option>
+                <option value="HYBRID">Hybrid</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Office Location</label>
+              <input 
+                type="text" 
+                [(ngModel)]="offerLetterForm.officeLocation" 
+                name="officeLocation"
+                placeholder="e.g., Bangalore, Karnataka">
+            </div>
+          </div>
+        </div>
+
+        <!-- Compensation Details -->
+        <div class="form-section">
+          <h4>💰 Compensation Details</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Annual CTC (₹) *</label>
+              <input 
+                type="number" 
+                [(ngModel)]="offerLetterForm.annualCtc" 
+                name="annualCtc"
+                (input)="onCtcChange()"
+                placeholder="e.g., 800000"
+                required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Basic Salary (₹)</label>
+              <input 
+                type="number" 
+                [(ngModel)]="offerLetterForm.basicSalary" 
+                name="basicSalary"
+                readonly>
+            </div>
+            <div class="form-group">
+              <label>HRA (₹)</label>
+              <input 
+                type="number" 
+                [(ngModel)]="offerLetterForm.hra" 
+                name="hra"
+                readonly>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Special Allowance (₹)</label>
+              <input 
+                type="number" 
+                [(ngModel)]="offerLetterForm.specialAllowance" 
+                name="specialAllowance"
+                readonly>
+            </div>
+            <div class="form-group">
+              <label>Performance Bonus (₹)</label>
+              <input 
+                type="number" 
+                [(ngModel)]="offerLetterForm.performanceBonus" 
+                name="performanceBonus"
+                readonly>
+            </div>
+          </div>
+        </div>
+
+        <!-- Benefits & Terms -->
+        <div class="form-section">
+          <h4>🎁 Benefits & Terms</h4>
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label>Benefits</label>
+              <textarea 
+                [(ngModel)]="offerLetterForm.benefits" 
+                name="benefits"
+                rows="2"
+                placeholder="e.g., Health Insurance, PF, Gratuity"></textarea>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Paid Leaves (Days/Year)</label>
+              <input 
+                type="number" 
+                [(ngModel)]="offerLetterForm.paidLeaves" 
+                name="paidLeaves"
+                placeholder="24">
+            </div>
+            <div class="form-group">
+              <label>Probation Period (Months)</label>
+              <input 
+                type="number" 
+                [(ngModel)]="offerLetterForm.probationPeriod" 
+                name="probationPeriod"
+                placeholder="3">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Notice Period (Days)</label>
+              <input 
+                type="number" 
+                [(ngModel)]="offerLetterForm.noticePeriod" 
+                name="noticePeriod"
+                placeholder="30">
+            </div>
+            <div class="form-group">
+              <label>Offer Expiry Date</label>
+              <input 
+                type="date" 
+                [(ngModel)]="offerLetterForm.expiryDate" 
+                name="expiryDate">
+            </div>
+          </div>
+        </div>
+
+        <!-- Reporting Manager -->
+        <div class="form-section">
+          <h4>👤 Reporting Manager</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Manager Name</label>
+              <input 
+                type="text" 
+                [(ngModel)]="offerLetterForm.reportingManager" 
+                name="reportingManager"
+                placeholder="e.g., John Doe">
+            </div>
+            <div class="form-group">
+              <label>Manager Designation</label>
+              <input 
+                type="text" 
+                [(ngModel)]="offerLetterForm.reportingManagerDesignation" 
+                name="reportingManagerDesignation"
+                placeholder="e.g., Engineering Manager">
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Notes -->
+        <div class="form-section">
+          <h4>📝 Additional Notes</h4>
+          <div class="form-group full-width">
+            <textarea 
+              [(ngModel)]="offerLetterForm.additionalNotes" 
+              name="additionalNotes"
+              rows="3"
+              placeholder="Any additional information or special terms"></textarea>
+          </div>
+        </div>
+      </form>
+
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+      <button 
+        class="btn btn-primary" 
+        (click)="generateOfferLetter()"
+        [disabled]="loading">
+        <i class="fas fa-check"></i>
+        {{ loading ? 'Generating...' : 'Generate Offer Letter' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: View Offer Letter -->
+<div *ngIf="showViewModal && selectedOfferLetter" class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content large" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2><i class="fas fa-file-alt"></i> Offer Letter Details</h2>
+      <button class="close-btn" (click)="closeModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body offer-preview">
+      <div class="offer-header">
+        <h3>{{ selectedOfferLetter.offerLetterNumber }}</h3>
+        <span [class]="'badge ' + getStatusBadgeClass(selectedOfferLetter.status)">
+          {{ selectedOfferLetter.status }}
+        </span>
+      </div>
+
+      <div class="preview-section">
+        <h4>Candidate Information</h4>
+        <p><strong>Name:</strong> {{ selectedOfferLetter.candidateName }}</p>
+        <p><strong>Email:</strong> {{ selectedOfferLetter.candidateEmail }}</p>
+        <p><strong>Position:</strong> {{ selectedOfferLetter.jobTitle }}</p>
+        <p><strong>Company:</strong> {{ selectedOfferLetter.company }}</p>
+      </div>
+
+      <div class="preview-section">
+        <h4>Offer Details</h4>
+        <p><strong>Annual CTC:</strong> {{ formatCurrency(selectedOfferLetter.annualCtc, selectedOfferLetter.currency) }}</p>
+        <p><strong>Employment Type:</strong> {{ selectedOfferLetter.employmentType }}</p>
+        <p><strong>Work Location:</strong> {{ selectedOfferLetter.workLocation }}</p>
+        <p><strong>Joining Date:</strong> {{ selectedOfferLetter.joiningDate | date: 'dd MMM yyyy' }}</p>
+        <p><strong>Offer Date:</strong> {{ selectedOfferLetter.offerDate | date: 'dd MMM yyyy' }}</p>
+      </div>
+
+      <div class="preview-section">
+        <h4>Status Tracking</h4>
+        <p><strong>Generated:</strong> {{ selectedOfferLetter.generatedAt | date: 'dd MMM yyyy, hh:mm a' }}</p>
+        <p *ngIf="selectedOfferLetter.sentAt"><strong>Sent:</strong> {{ selectedOfferLetter.sentAt | date: 'dd MMM yyyy, hh:mm a' }}</p>
+        <p><strong>Accepted:</strong> {{ selectedOfferLetter.isAccepted ? 'Yes' : 'No' }}</p>
+        <p><strong>Downloaded:</strong> {{ selectedOfferLetter.isDownloaded ? 'Yes' : 'No' }}</p>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeModal()">Close</button>
+      <button 
+        *ngIf="selectedOfferLetter.status === 'GENERATED'"
+        class="btn btn-primary" 
+        (click)="sendOfferLetter(selectedOfferLetter.id); closeModal()">
+        <i class="fas fa-paper-plane"></i> Send to Candidate
+      </button>
+      <button 
+        class="btn btn-info" 
+        (click)="downloadOfferLetter(selectedOfferLetter.id)">
+        <i class="fas fa-download"></i> Download PDF
+      </button>
+    </div>
+  </div>
+</div>

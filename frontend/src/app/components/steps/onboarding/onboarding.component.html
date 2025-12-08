@@ -1,0 +1,210 @@
+<div class="onboarding-main-content">
+
+  <!-- Congratulations Banner -->
+  <div class="congratulations-banner">
+    <div class="celebration-circle">
+      <div class="party-icon">🎉</div>
+    </div>
+    <div class="banner-content">
+      <h1 class="congrats-title">Congratulations! 🎉</h1>
+      <p class="congrats-message">
+        {{ candidateName }} has accepted the offer! Welcome your new team member to the organization.
+      </p>
+    </div>
+  </div>
+
+  <!-- Scrollable Content Cards -->
+  <div class="content-scroll-area">
+
+    <!-- Offer Status Card -->
+    <div class="status-card">
+      <div class="card-header">
+        <div class="card-icon success-icon">✅</div>
+        <h2>Offer Status</h2>
+      </div>
+      <div class="card-content">
+        <div class="offer-summary">
+          <div class="candidate-info">
+            <div class="candidate-details">
+              <h3 class="candidate-name">{{ candidateName }}</h3>
+              <p class="candidate-role">
+                {{ candidateRole }} • {{ formatCurrency(baseSalary) }} + {{ formatCurrency(bonus) }} bonus
+              </p>
+              <p class="offer-date">Offer accepted on {{ offerAcceptedDate }}</p>
+            </div>
+            <div class="status-badge accepted">Accepted</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Onboarding Progress Card -->
+    <div class="progress-card">
+      <div class="card-header">
+        <div class="card-icon progress-icon">👥</div>
+        <h2>Onboarding Progress</h2>
+      </div>
+      <div class="card-content">
+        <div class="progress-overview">
+          <div class="progress-stats">
+            <div class="stat-item">
+              <span class="stat-label">Completion Progress</span>
+              <span class="stat-value">{{ overallProgress }}% ({{ completedTasksCount }}/{{ onboardingTasks.length }})</span>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="overallProgress"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Onboarding Tasks List -->
+        <div class="onboarding-tasks">
+          <div class="task-item" *ngFor="let task of onboardingTasks" [ngClass]="task.completed ? 'completed' : 'pending'">
+            <div class="task-checkbox">
+              <span *ngIf="task.completed" class="check-icon">✓</span>
+              <span *ngIf="!task.completed" class="pending-icon">○</span>
+            </div>
+            <div class="task-content">
+              <span class="task-name">{{ task.name }}</span>
+              <span *ngIf="task.description" class="task-description">{{ task.description }}</span>
+            </div>
+            <div class="task-action" *ngIf="!task.completed && task.actionText">
+              <button class="action-btn" (click)="executeAction(task.id + '-action')">{{ task.actionText }}</button>
+            </div>
+            <div class="task-status" *ngIf="task.completed">
+              <span class="status-badge completed">Completed</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Important Dates Card -->
+    <div class="dates-card">
+      <div class="card-header">
+        <div class="card-icon calendar-icon">📅</div>
+        <h2>Important Dates</h2>
+      </div>
+      <div class="card-content">
+        <div class="dates-list">
+          <div class="date-item" *ngFor="let date of importantDates">
+            <span class="date-label">{{ date.label }}</span>
+            <span class="date-value">{{ date.value }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Documentation Card -->
+    <div class="documentation-card">
+      <div class="card-header">
+        <div class="card-icon docs-icon">📋</div>
+        <h2>Documentation</h2>
+      </div>
+      <div class="card-content">
+        <div class="document-list">
+          <div class="document-item" *ngFor="let doc of documents">
+            <div class="doc-info">
+              <span class="doc-name">{{ doc.name }}</span>
+            </div>
+            <div class="doc-status">
+              <span class="status-badge" [ngClass]="doc.status">{{ doc.status === 'completed' ? '✓ Complete' : 'Pending' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Immediate Actions Card -->
+    <div class="actions-card">
+      <div class="card-header">
+        <div class="card-icon action-icon">⚡</div>
+        <h2>Immediate Actions</h2>
+      </div>
+      <div class="card-content">
+        <div class="action-list">
+          <div class="action-item" *ngFor="let action of immediateActions">
+            <div class="action-info">
+              <h4 class="action-title">{{ action.title }}</h4>
+              <p class="action-description">{{ action.description }}</p>
+            </div>
+            <div class="action-button">
+              <button class="primary-btn" (click)="executeAction(action.action)">{{ action.buttonText }}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team Introduction Card -->
+    <div class="team-card">
+      <div class="card-header">
+        <div class="card-icon team-icon">👥</div>
+        <h2>Team Introduction</h2>
+      </div>
+      <div class="card-content">
+        <div class="team-members">
+          <div class="team-member" *ngFor="let member of teamMembers">
+            <div class="member-avatar">
+              <img *ngIf="member.avatar" [src]="'/assets/avatars/' + member.avatar" [alt]="member.name" onerror="this.style.display='none'">
+              <div class="avatar-fallback">{{ member.initials }}</div>
+            </div>
+            <div class="member-info">
+              <h4>{{ member.name }}</h4>
+              <p>{{ member.role }}</p>
+              <p class="member-email">{{ member.email }}</p>
+            </div>
+            <div class="contact-actions">
+              <button class="contact-btn" (click)="contactMember(member.email)">✉️</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- First Week Schedule Card -->
+    <div class="schedule-card">
+      <div class="card-header">
+        <div class="card-icon schedule-icon">📅</div>
+        <h2>First Week Schedule</h2>
+      </div>
+      <div class="card-content">
+        <div class="schedule-timeline">
+          <div class="timeline-item" *ngFor="let item of scheduleItems">
+            <div class="timeline-time">
+              <div class="day">{{ item.day }}</div>
+              <div class="date">{{ item.date }}</div>
+            </div>
+            <div class="timeline-content">
+              <h4>{{ item.title }}</h4>
+              <p *ngFor="let activity of item.activities">{{ activity }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resources & Links Card -->
+    <div class="resources-card">
+      <div class="card-header">
+        <div class="card-icon resources-icon">📚</div>
+        <h2>Resources & Quick Links</h2>
+      </div>
+      <div class="card-content">
+        <div class="resources-grid">
+          <div class="resource-item" *ngFor="let res of resources">
+            <div class="resource-icon">{{ res.icon }}</div>
+            <div class="resource-info">
+              <h4>{{ res.title }}</h4>
+              <p>{{ res.description }}</p>
+            </div>
+            <button class="resource-btn" (click)="accessResource(res.title)">{{ res.actionText }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

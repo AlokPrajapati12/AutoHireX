@@ -1,0 +1,357 @@
+<div class="interviews-container">
+
+  <!-- Success/Error Messages -->
+  <div class="alert alert-success" *ngIf="successMessage">
+    {{ successMessage }}
+  </div>
+  <div class="alert alert-error" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1>Schedule & Conduct Interviews</h1>
+    <p class="subtitle">Schedule interviews for shortlisted candidates and manage interview rounds</p>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon scheduled">📅</div>
+      <div class="stat-content">
+        <h3>{{ stats.totalScheduled }}</h3>
+        <p>Scheduled</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon completed">✅</div>
+      <div class="stat-content">
+        <h3>{{ stats.totalCompleted }}</h3>
+        <p>Completed</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon cancelled">❌</div>
+      <div class="stat-content">
+        <h3>{{ stats.totalCancelled }}</h3>
+        <p>Cancelled</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Loading interviews...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div class="interviews-layout" *ngIf="!isLoading">
+
+    <!-- LEFT: Shortlisted Candidates -->
+    <div class="candidates-panel">
+      <div class="panel-header">
+        <h2>Shortlisted Candidates</h2>
+        <p class="panel-subtitle">{{ shortlistedCandidates.length }} candidates ready for interview</p>
+      </div>
+
+      <div class="candidates-list">
+        <div class="candidate-card" 
+             *ngFor="let candidate of shortlistedCandidates"
+             [ngClass]="{ 'selected': selectedCandidate?.id === candidate.id }">
+          
+          <div class="candidate-info">
+            <div class="candidate-header">
+              <h3>{{ candidate.candidateName }}</h3>
+              <span class="score-badge">{{ candidate.finalScore }}%</span>
+            </div>
+            <p class="candidate-email">{{ candidate.candidateEmail }}</p>
+            <p class="candidate-phone">{{ candidate.candidatePhone }}</p>
+            
+            <div class="skills-preview">
+              <span class="skill-tag" *ngFor="let skill of candidate.matchedSkills?.slice(0, 3)">
+                {{ skill }}
+              </span>
+            </div>
+          </div>
+
+          <div class="candidate-actions">
+            <button class="btn btn-primary" 
+                    *ngIf="!candidate.interviewScheduled"
+                    (click)="openScheduleModal(candidate)">
+              📅 Schedule Interview
+            </button>
+            <span class="status-badge scheduled" *ngIf="candidate.interviewScheduled">
+              ✅ Interview Scheduled
+            </span>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="shortlistedCandidates.length === 0">
+          <p>No shortlisted candidates available</p>
+          <p class="hint">Complete Step 5 (Shortlisting) first</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Scheduled Interviews -->
+    <div class="interviews-panel">
+      <div class="panel-header">
+        <h2>Scheduled Interviews</h2>
+        <div class="filter-controls">
+          <select [(ngModel)]="selectedInterviewStatus" (change)="filterByStatus()">
+            <option value="">All Status</option>
+            <option value="SCHEDULED">Scheduled</option>
+            <option value="COMPLETED">Completed</option>
+            <option value="CANCELLED">Cancelled</option>
+            <option value="RESCHEDULED">Rescheduled</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="interviews-list">
+        <div class="interview-card" *ngFor="let interview of filteredInterviews">
+          
+          <div class="interview-header">
+            <div class="candidate-details">
+              <h3>{{ interview.candidateName }}</h3>
+              <p>{{ interview.candidateEmail }}</p>
+            </div>
+            <span class="round-badge" [ngClass]="getRoundBadgeClass(interview.interviewRound)">
+              {{ getRoundName(interview.interviewRound) }}
+            </span>
+          </div>
+
+          <div class="interview-details">
+            <div class="detail-row">
+              <span class="label">📅 Date:</span>
+              <span class="value">{{ formatDate(interview.scheduledDate) }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">⏰ Time:</span>
+              <span class="value">{{ interview.scheduledTime }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">💻 Mode:</span>
+              <span class="value">{{ interview.interviewMode }}</span>
+            </div>
+            <div class="detail-row" *ngIf="interview.meetingLink">
+              <span class="label">🔗 Link:</span>
+              <a [href]="interview.meetingLink" target="_blank" class="link">Join Meeting</a>
+            </div>
+            <div class="detail-row" *ngIf="interview.venue">
+              <span class="label">📍 Venue:</span>
+              <span class="value">{{ interview.venue }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">👥 Panel:</span>
+              <span class="value">{{ interview.interviewPanel }}</span>
+            </div>
+          </div>
+
+          <div class="interview-status-section">
+            <span class="status-badge" [ngClass]="getInterviewStatusClass(interview.status)">
+              {{ interview.status }}
+            </span>
+          </div>
+
+          <!-- Show Feedback Button if Interview is Completed -->
+          <div class="interview-actions" *ngIf="interview.status === 'SCHEDULED'">
+            <button class="btn btn-success" (click)="openFeedbackModal(interview)">
+              📝 Submit Feedback
+            </button>
+          </div>
+
+          <!-- Show Results if Completed -->
+          <div class="interview-results" *ngIf="interview.status === 'COMPLETED'">
+            <h4>Interview Results</h4>
+            <div class="scores">
+              <div class="score-item">
+                <span>Technical:</span>
+                <strong>{{ interview.technicalScore }}/10</strong>
+              </div>
+              <div class="score-item">
+                <span>Communication:</span>
+                <strong>{{ interview.communicationScore }}/10</strong>
+              </div>
+              <div class="score-item">
+                <span>Overall:</span>
+                <strong>{{ interview.overallRating }}/10</strong>
+              </div>
+            </div>
+            <div class="decision-badge" [ngClass]="interview.decision?.toLowerCase()">
+              Decision: {{ interview.decision }}
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="filteredInterviews.length === 0">
+          <p>No scheduled interviews</p>
+          <p class="hint">Schedule interviews for shortlisted candidates</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SCHEDULE INTERVIEW MODAL -->
+  <div class="modal-overlay" *ngIf="showScheduleModal" (click)="closeScheduleModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Schedule Interview</h2>
+        <button class="close-btn" (click)="closeScheduleModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Candidate</label>
+          <input type="text" [value]="selectedCandidate?.candidateName" disabled>
+        </div>
+
+        <div class="form-group">
+          <label>Interview Round *</label>
+          <select [(ngModel)]="scheduleForm.interviewRound" required>
+            <option value="ROUND_1">Round 1 (Technical)</option>
+            <option value="ROUND_2">Round 2 (Advanced Technical)</option>
+            <option value="HR_ROUND">HR Round</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date *</label>
+            <input type="date" [(ngModel)]="scheduleForm.scheduledDate" required>
+          </div>
+          <div class="form-group">
+            <label>Time *</label>
+            <input type="text" [(ngModel)]="scheduleForm.scheduledTime" 
+                   placeholder="10:00 AM - 11:00 AM" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Interview Mode *</label>
+          <select [(ngModel)]="scheduleForm.interviewMode" required>
+            <option value="ONLINE">Online</option>
+            <option value="OFFLINE">Offline</option>
+            <option value="HYBRID">Hybrid</option>
+          </select>
+        </div>
+
+        <div class="form-group" *ngIf="scheduleForm.interviewMode === 'ONLINE'">
+          <label>Meeting Link</label>
+          <input type="url" [(ngModel)]="scheduleForm.meetingLink" 
+                 placeholder="https://meet.google.com/xxx-xxxx-xxx">
+        </div>
+
+        <div class="form-group" *ngIf="scheduleForm.interviewMode === 'OFFLINE'">
+          <label>Venue</label>
+          <input type="text" [(ngModel)]="scheduleForm.venue" 
+                 placeholder="Office Address">
+        </div>
+
+        <div class="form-group">
+          <label>Interview Panel</label>
+          <input type="text" [(ngModel)]="scheduleForm.interviewPanel" 
+                 placeholder="Technical Panel">
+        </div>
+
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea [(ngModel)]="scheduleForm.notes" rows="3" 
+                    placeholder="Additional notes for the interview"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="scheduleForm.sendNotification">
+            Send email notification to candidate
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeScheduleModal()">Cancel</button>
+        <button class="btn btn-primary" (click)="scheduleInterview()" [disabled]="isLoading">
+          {{ isLoading ? 'Scheduling...' : 'Schedule Interview' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEEDBACK MODAL -->
+  <div class="modal-overlay" *ngIf="showFeedbackModal" (click)="closeFeedbackModal()">
+    <div class="modal-content large" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Submit Interview Feedback</h2>
+        <button class="close-btn" (click)="closeFeedbackModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="candidate-summary">
+          <h3>{{ selectedInterview?.candidateName }}</h3>
+          <p>{{ getRoundName(selectedInterview?.interviewRound || '') }}</p>
+        </div>
+
+        <div class="form-group">
+          <label>Technical Skills (out of 10) *</label>
+          <input type="number" [(ngModel)]="feedbackForm.technicalScore" 
+                 min="0" max="10" step="0.5" required>
+        </div>
+
+        <div class="form-group">
+          <label>Communication Skills (out of 10) *</label>
+          <input type="number" [(ngModel)]="feedbackForm.communicationScore" 
+                 min="0" max="10" step="0.5" required>
+        </div>
+
+        <div class="form-group">
+          <label>Overall Rating (out of 10) *</label>
+          <input type="number" [(ngModel)]="feedbackForm.overallRating" 
+                 min="0" max="10" step="0.5" required>
+        </div>
+
+        <div class="form-group">
+          <label>Feedback *</label>
+          <textarea [(ngModel)]="feedbackForm.feedback" rows="4" 
+                    placeholder="Detailed feedback about the interview" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Decision *</label>
+          <select [(ngModel)]="feedbackForm.decision" required>
+            <option value="SELECTED">Selected</option>
+            <option value="NEXT_ROUND">Move to Next Round</option>
+            <option value="ON_HOLD">On Hold</option>
+            <option value="REJECTED">Rejected</option>
+          </select>
+        </div>
+
+        <div class="form-group" *ngIf="feedbackForm.decision === 'NEXT_ROUND'">
+          <label>Next Round</label>
+          <select [(ngModel)]="feedbackForm.nextRound">
+            <option value="ROUND_2" *ngIf="selectedInterview?.roundNumber === 1">Round 2</option>
+            <option value="HR_ROUND" *ngIf="selectedInterview?.roundNumber !== 3">HR Round</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Interviewer Remarks</label>
+          <textarea [(ngModel)]="feedbackForm.interviewerRemarks" rows="3" 
+                    placeholder="Additional remarks"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeFeedbackModal()">Cancel</button>
+        <button class="btn btn-success" (click)="submitFeedback()" [disabled]="isLoading">
+          {{ isLoading ? 'Submitting...' : 'Submit Feedback' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Player for Voice Interview (Hidden) -->
+  <audio #audioPlayer style="display: none;"></audio>
+
+</div>

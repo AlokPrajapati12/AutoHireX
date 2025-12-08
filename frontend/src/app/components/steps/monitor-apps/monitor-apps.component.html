@@ -1,0 +1,287 @@
+<div class="monitor-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <div class="icon-wrapper">
+          <mat-icon class="header-icon">assessment</mat-icon>
+        </div>
+        <div>
+          <h1>Application Monitoring Dashboard</h1>
+          <p class="subtitle">Real-time candidate tracking across all your job postings</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button mat-raised-button color="primary" (click)="createNewJob()" class="create-job-btn">
+          <mat-icon>add_circle</mat-icon>
+          <span>Create New Job</span>
+        </button>
+        <button mat-raised-button color="accent" (click)="goToHome()" class="home-btn">
+          <mat-icon>home</mat-icon>
+          <span>Home</span>
+        </button>
+        <button mat-icon-button class="refresh-btn" (click)="refresh()" matTooltip="Refresh Data">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <mat-spinner diameter="60"></mat-spinner>
+    <p>Loading applications data...</p>
+  </div>
+
+  <!-- Main Dashboard Content -->
+  <div *ngIf="!isLoading" class="dashboard-content">
+    
+    <!-- Global Statistics -->
+    <div class="global-stats">
+      <div class="stat-card total-card">
+        <div class="stat-icon">
+          <mat-icon>work</mat-icon>
+        </div>
+        <div class="stat-details">
+          <h2>{{ totalJobs }}</h2>
+          <p>Active Job Postings</p>
+        </div>
+      </div>
+
+      <div class="stat-card applications-card">
+        <div class="stat-icon">
+          <mat-icon>people</mat-icon>
+        </div>
+        <div class="stat-details">
+          <h2>{{ totalApplications }}</h2>
+          <p>Total Applications Received</p>
+        </div>
+      </div>
+
+      <div class="stat-card average-card">
+        <div class="stat-icon">
+          <mat-icon>trending_up</mat-icon>
+        </div>
+        <div class="stat-details">
+          <h2>{{ totalJobs > 0 ? (totalApplications / totalJobs).toFixed(1) : 0 }}</h2>
+          <p>Average per Job</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Job Cards Grid -->
+    <div class="jobs-grid">
+      <div *ngFor="let job of jobsData" class="job-card">
+        <!-- Job Header -->
+        <div class="job-header">
+          <div class="job-title-section">
+            <div class="title-with-status">
+              <h3>{{ job.jobTitle }}</h3>
+              <span class="status-badge" [class.status-closed]="job.status === 'CLOSED'" [class.status-open]="job.status === 'OPEN'">
+                {{ job.status === 'CLOSED' ? '🔒 Closed' : '🔓 Open' }}
+              </span>
+            </div>
+            <div class="job-meta">
+              <span class="company">
+                <mat-icon>business</mat-icon>
+                {{ job.company }}
+              </span>
+              <span class="location">
+                <mat-icon>location_on</mat-icon>
+                {{ job.location }}
+              </span>
+              <span class="date">
+                <mat-icon>schedule</mat-icon>
+                Posted {{ formatDate(job.postedDate) }}
+              </span>
+            </div>
+          </div>
+          <div class="total-applications-badge">
+            <div class="badge-content">
+              <span class="count">{{ job.totalApplications }}</span>
+              <span class="label">Candidates</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Application Funnel -->
+        <div class="application-funnel">
+          <h4>
+            <mat-icon>filter_list</mat-icon>
+            Hiring Funnel
+          </h4>
+          
+          <div class="funnel-stages">
+            <!-- Submitted Stage -->
+            <div class="stage-item" [class.active]="job.submittedCount > 0">
+              <div class="stage-icon" [style.background-color]="getStatusColor('submitted')">
+                <mat-icon>send</mat-icon>
+              </div>
+              <div class="stage-info">
+                <span class="stage-label">Submitted</span>
+                <span class="stage-count">{{ job.submittedCount }}</span>
+              </div>
+              <div class="stage-bar">
+                <div class="stage-progress" 
+                     [style.width.%]="job.totalApplications > 0 ? (job.submittedCount / job.totalApplications * 100) : 0"
+                     [style.background-color]="getStatusColor('submitted')">
+                </div>
+              </div>
+            </div>
+
+            <!-- Under Review Stage -->
+            <div class="stage-item" [class.active]="job.underReviewCount > 0">
+              <div class="stage-icon" [style.background-color]="getStatusColor('review')">
+                <mat-icon>rate_review</mat-icon>
+              </div>
+              <div class="stage-info">
+                <span class="stage-label">Under Review</span>
+                <span class="stage-count">{{ job.underReviewCount }}</span>
+              </div>
+              <div class="stage-bar">
+                <div class="stage-progress" 
+                     [style.width.%]="job.totalApplications > 0 ? (job.underReviewCount / job.totalApplications * 100) : 0"
+                     [style.background-color]="getStatusColor('review')">
+                </div>
+              </div>
+            </div>
+
+            <!-- Shortlisted Stage -->
+            <div class="stage-item" [class.active]="job.shortlistedCount > 0">
+              <div class="stage-icon" [style.background-color]="getStatusColor('shortlisted')">
+                <mat-icon>star</mat-icon>
+              </div>
+              <div class="stage-info">
+                <span class="stage-label">Shortlisted</span>
+                <span class="stage-count">{{ job.shortlistedCount }}</span>
+              </div>
+              <div class="stage-bar">
+                <div class="stage-progress" 
+                     [style.width.%]="job.totalApplications > 0 ? (job.shortlistedCount / job.totalApplications * 100) : 0"
+                     [style.background-color]="getStatusColor('shortlisted')">
+                </div>
+              </div>
+            </div>
+
+            <!-- Interview Stage -->
+            <div class="stage-item" [class.active]="job.interviewScheduledCount > 0">
+              <div class="stage-icon" [style.background-color]="getStatusColor('interview')">
+                <mat-icon>event</mat-icon>
+              </div>
+              <div class="stage-info">
+                <span class="stage-label">Interview</span>
+                <span class="stage-count">{{ job.interviewScheduledCount }}</span>
+              </div>
+              <div class="stage-bar">
+                <div class="stage-progress" 
+                     [style.width.%]="job.totalApplications > 0 ? (job.interviewScheduledCount / job.totalApplications * 100) : 0"
+                     [style.background-color]="getStatusColor('interview')">
+                </div>
+              </div>
+            </div>
+
+            <!-- Accepted Stage -->
+            <div class="stage-item" [class.active]="job.acceptedCount > 0">
+              <div class="stage-icon" [style.background-color]="getStatusColor('accepted')">
+                <mat-icon>check_circle</mat-icon>
+              </div>
+              <div class="stage-info">
+                <span class="stage-label">Accepted</span>
+                <span class="stage-count">{{ job.acceptedCount }}</span>
+              </div>
+              <div class="stage-bar">
+                <div class="stage-progress" 
+                     [style.width.%]="job.totalApplications > 0 ? (job.acceptedCount / job.totalApplications * 100) : 0"
+                     [style.background-color]="getStatusColor('accepted')">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Job Statistics -->
+        <div class="job-stats">
+          <div class="stat-item">
+            <mat-icon>trending_up</mat-icon>
+            <div>
+              <span class="stat-value">{{ getSuccessRate(job) }}%</span>
+              <span class="stat-label">Success Rate</span>
+            </div>
+          </div>
+          
+          <div class="stat-item">
+            <mat-icon>pie_chart</mat-icon>
+            <div>
+              <span class="stat-value">{{ getFunnelProgress(job) }}%</span>
+              <span class="stat-label">Active Pipeline</span>
+            </div>
+          </div>
+
+          <div class="stat-item rejected">
+            <mat-icon>cancel</mat-icon>
+            <div>
+              <span class="stat-value">{{ job.rejectedCount }}</span>
+              <span class="stat-label">Rejected</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="job-action-buttons">
+          <!-- Proceed to Shortlist Button (Per Job) -->
+          <button 
+            *ngIf="hasEnoughCandidatesForJob(job)"
+            mat-raised-button 
+            color="accent" 
+            class="shortlist-btn"
+            (click)="proceedToShortlistForJob(job.jobId)">
+            <mat-icon>arrow_forward</mat-icon>
+            Proceed to Shortlist ({{ job.totalApplications }} candidates)
+          </button>
+          
+          <!-- Regenerate JD Button (Per Job) -->
+          <button 
+            *ngIf="!hasEnoughCandidatesForJob(job)"
+            mat-raised-button 
+            color="primary" 
+            class="regenerate-job-btn"
+            (click)="regenerateJDForJob(job.jobId)">
+            <mat-icon>refresh</mat-icon>
+            Regenerate JD for More Candidates
+          </button>
+          
+          <!-- Not Ready Message -->
+          <div *ngIf="!hasEnoughCandidatesForJob(job)" class="not-ready-message">
+            <mat-icon>info</mat-icon>
+            Need at least {{ minimumCandidates }} candidates to proceed (Current: {{ job.totalApplications }})
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="jobsData.length === 0 && !isLoading" class="empty-state">
+      <mat-icon>work_off</mat-icon>
+      <h2>No Jobs Posted Yet</h2>
+      <p>Create your first job posting to start receiving applications</p>
+      <button mat-raised-button color="primary" (click)="regenerateJD()">
+        <mat-icon>add</mat-icon>
+        Create New Job
+      </button>
+    </div>
+
+    <!-- Additional Information Panel -->
+    <div class="info-panel" *ngIf="jobsData.length > 0">
+      <mat-icon>info</mat-icon>
+      <div class="info-content">
+        <h4>About This Dashboard</h4>
+        <ul>
+          <li><strong>Hiring Funnel:</strong> Track candidates through each stage from submission to acceptance.</li>
+          <li><strong>Success Rate:</strong> Percentage of accepted candidates out of total applications.</li>
+          <li><strong>Active Pipeline:</strong> Percentage of candidates currently in the hiring process.</li>
+          <li><strong>Per-Job Actions:</strong> Each job has its own "Proceed to Shortlist" button (when {{ minimumCandidates }}+ candidates) or "Regenerate JD" button (when fewer candidates).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

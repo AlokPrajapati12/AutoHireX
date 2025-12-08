@@ -1,0 +1,240 @@
+<div class="create-job-container">
+  <h2>Create Job Posting</h2>
+  
+  <!-- Simple Mode: Just Company and Role -->
+  <mat-card class="simple-mode-card">
+    <mat-card-header>
+      <mat-icon class="header-icon">work</mat-icon>
+      <mat-card-title>Quick Job Creation</mat-card-title>
+      <mat-card-subtitle>Enter company name and job title to generate with AI</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="jobForm" class="simple-form">
+        <!-- Company Name -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Company Name *</mat-label>
+          <input matInput formControlName="companyName" placeholder="e.g., Google, Microsoft, Apple">
+          <mat-icon matPrefix>business</mat-icon>
+          <mat-error>Company name is required</mat-error>
+        </mat-form-field>
+
+        <!-- Job Title -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Job Title *</mat-label>
+          <input matInput formControlName="jobTitle" placeholder="e.g., Senior Software Engineer">
+          <mat-icon matPrefix>badge</mat-icon>
+          <mat-error>Job title is required</mat-error>
+        </mat-form-field>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <!-- Start Automated Workflow Button (PRIMARY) -->
+          <button 
+            type="button"
+            mat-raised-button 
+            color="primary" 
+            class="automated-workflow-button"
+            (click)="startAutomatedWorkflow()"
+            [disabled]="isGeneratingAI || isAutomatedRunning || !jobForm.get('companyName')?.value || !jobForm.get('jobTitle')?.value">
+            <mat-spinner *ngIf="isAutomatedRunning" diameter="20" class="spinner-inline"></mat-spinner>
+            <mat-icon *ngIf="!isAutomatedRunning">rocket_launch</mat-icon>
+            {{ isAutomatedRunning ? 'Running Automated Workflow...' : 'Start Automated Workflow' }}
+          </button>
+
+          <!-- AI Generate Button (Single Step) -->
+          <button 
+            type="button"
+            mat-stroked-button 
+            color="primary" 
+            class="ai-button"
+            (click)="generateWithAI()"
+            [disabled]="isGeneratingAI || isAutomatedRunning || !jobForm.get('companyName')?.value || !jobForm.get('jobTitle')?.value">
+            <mat-spinner *ngIf="isGeneratingAI" diameter="20" class="spinner-inline"></mat-spinner>
+            <mat-icon *ngIf="!isGeneratingAI">auto_awesome</mat-icon>
+            {{ isGeneratingAI ? 'Generating...' : 'Generate JD Only' }}
+          </button>
+
+          <!-- Manual Mode Button -->
+          <button 
+            type="button"
+            mat-stroked-button 
+            color="accent"
+            (click)="toggleManualMode()"
+            [disabled]="isGeneratingAI || isAutomatedRunning">
+            <mat-icon>edit_note</mat-icon>
+            {{ showManualDetails ? 'Hide Manual Details' : 'Fill Manually' }}
+          </button>
+        </div>
+
+        <!-- Workflow Progress Display -->
+        <div class="workflow-progress" *ngIf="workflowProgress && workflowProgress.status !== 'idle'">
+          <div class="progress-header">
+            <mat-icon [class.spinning]="workflowProgress.status === 'running'">{{ getProgressIcon(workflowProgress.status) }}</mat-icon>
+            <span class="progress-title">{{ workflowProgress.stepName }}</span>
+          </div>
+          <div class="progress-message" [class]="'status-' + workflowProgress.status">
+            {{ workflowProgress.message }}
+          </div>
+          <div class="progress-step-indicator" *ngIf="workflowProgress.currentStep > 0">
+            Step {{ workflowProgress.currentStep }} of 8
+          </div>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Manual Details Section (Hidden by default) -->
+  <div class="manual-details-section" *ngIf="showManualDetails">
+    <mat-card class="details-card">
+      <mat-card-header>
+        <mat-icon class="header-icon">description</mat-icon>
+        <mat-card-title>Detailed Information</mat-card-title>
+        <mat-card-subtitle>Fill in additional details for a customized job description</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form [formGroup]="jobForm" class="detailed-form">
+          <!-- Job Details -->
+          <div class="form-section">
+            <h3>Job Details</h3>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Department</mat-label>
+                <mat-select formControlName="department">
+                  <mat-option *ngFor="let dept of departments" [value]="dept">
+                    {{ dept }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Location</mat-label>
+                <input matInput formControlName="location" placeholder="e.g., Remote, New York">
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Employment Type</mat-label>
+                <mat-select formControlName="employmentType">
+                  <mat-option *ngFor="let type of employmentTypes" [value]="type.value">
+                    {{ type.label }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Experience Level</mat-label>
+                <mat-select formControlName="experienceLevel">
+                  <mat-option *ngFor="let level of experienceLevels" [value]="level">
+                    {{ level }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Salary Range -->
+          <div class="form-section">
+            <h3>Compensation</h3>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Minimum Salary</mat-label>
+                <input matInput type="number" formControlName="minSalary" placeholder="50000">
+                <span matPrefix>$&nbsp;</span>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Maximum Salary</mat-label>
+                <input matInput type="number" formControlName="maxSalary" placeholder="100000">
+                <span matPrefix>$&nbsp;</span>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Requirements -->
+          <div class="form-section">
+            <h3>Requirements</h3>
+            
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Education Level</mat-label>
+              <mat-select formControlName="education">
+                <mat-option *ngFor="let edu of educationLevels" [value]="edu">
+                  {{ edu }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Key Skills (comma-separated)</mat-label>
+              <input matInput formControlName="keySkills" 
+                     placeholder="e.g., Java, Spring Boot, MongoDB">
+              <mat-hint>These will be included in the job description</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <!-- Benefits -->
+          <div class="form-section">
+            <h3>Benefits & Perks</h3>
+            
+            <div class="benefits-grid">
+              <mat-checkbox 
+                *ngFor="let benefit of benefitOptions"
+                [checked]="isBenefitSelected(benefit)"
+                (change)="onBenefitChange(benefit, $event.checked)">
+                {{ benefit }}
+              </mat-checkbox>
+            </div>
+          </div>
+
+          <!-- Generate from Manual Data Button -->
+          <div class="manual-generate-section">
+            <button 
+              type="button"
+              mat-raised-button 
+              color="primary"
+              (click)="generateManualDescription()">
+              <mat-icon>auto_fix_high</mat-icon>
+              Generate Description from Details
+            </button>
+          </div>
+
+          <!-- Job Description Preview (if generated) -->
+          <div class="form-section" *ngIf="jobForm.get('jobDescription')?.value">
+            <h3>Generated Job Description</h3>
+            <textarea 
+              class="description-preview"
+              [value]="jobForm.get('jobDescription')?.value"
+              readonly
+              rows="15"></textarea>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Proceed to Review Button (shown after manual generation) -->
+  <div class="proceed-section" *ngIf="aiGenerationComplete">
+    <button 
+      mat-raised-button 
+      color="primary" 
+      class="proceed-button"
+      (click)="proceedToReview()">
+      <mat-icon>arrow_forward</mat-icon>
+      Continue to Review & Post
+    </button>
+  </div>
+
+  <!-- Save Draft Button (always visible) -->
+  <div class="draft-section">
+    <button 
+      mat-stroked-button 
+      (click)="saveDraft()">
+      <mat-icon>save</mat-icon>
+      Save Draft
+    </button>
+  </div>
+</div>

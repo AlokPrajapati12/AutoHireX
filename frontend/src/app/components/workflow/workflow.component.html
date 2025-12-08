@@ -1,0 +1,95 @@
+<div class="background-overlay">
+  <!-- Animated Background Elements -->
+  <div class="grid-pattern"></div>
+  <div class="orb-1 floating-orb"></div>
+  <div class="orb-2 floating-orb"></div>
+  
+  <!-- Animated Particles -->
+  <div class="particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <!-- Main Workflow Container -->
+  <div class="workflow-container">
+    <div class="workflow-header">
+      <h1>Workflow Progress</h1>
+      <div class="progress-info">
+        <div class="progress-text">Progress: 12.5%</div>
+        <div class="duration-text">Est. Duration: 2-4 weeks</div>
+        <div class="status-badge status-in-progress">In Progress</div>
+      </div>
+    </div>
+
+    <div class="workflow-content">
+      <app-sidebar [currentStep]="currentStep" [steps]="workflowSteps" (stepClick)="onStepClick($event)">
+      </app-sidebar>
+      
+      <main class="main-content">
+        <div class="step-content">
+          <app-create-job *ngIf="currentStep === 1"></app-create-job>
+          <app-review-approve *ngIf="currentStep === 2"></app-review-approve>
+          <app-post-job *ngIf="currentStep === 3"></app-post-job>
+          <app-monitor-apps *ngIf="currentStep === 4"></app-monitor-apps>
+          <app-shortlist *ngIf="currentStep === 5"></app-shortlist>
+          <app-interviews *ngIf="currentStep === 6"></app-interviews>
+          <app-send-offer *ngIf="currentStep === 7"></app-send-offer>
+          <app-onboarding *ngIf="currentStep === 8"></app-onboarding>
+        </div>
+
+        <div class="step-navigation">
+          <div class="left">
+            <button 
+              class="previous-button"
+              [disabled]="currentStep === 1" 
+              (click)="previousStep()">
+              <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              <span class="button-text">Previous</span>
+            </button>
+          </div>
+
+          <div class="center">
+            <span class="step-indicator">
+              <span class="current-step">{{currentStep}}</span>
+              <span class="step-separator">/</span>
+              <span class="total-steps">8</span>
+            </span>
+          </div>
+
+          <div class="right">
+            <!-- For Step 8: Complete Workflow or Start New -->
+            <button *ngIf="currentStep === 8 && !isWorkflowCompleted" 
+                    class="complete-button"
+                    color="primary" 
+                    (click)="completeWorkflow()">
+              <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span class="button-text">Complete Workflow</span>
+            </button>
+            
+            <button *ngIf="currentStep === 8 && isWorkflowCompleted" 
+                    class="new-workflow-button"
+                    color="primary" 
+                    (click)="startNewWorkflow()">
+              <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+              </svg>
+              <span class="button-text">Start New Workflow</span>
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>

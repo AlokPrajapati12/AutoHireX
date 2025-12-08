@@ -1,0 +1,75 @@
+<nav class="workflow-nav" *ngIf="steps">
+    <!-- Header Section -->
+    <div class="nav-header">
+      <div class="nav-header__icon">
+        <mat-icon>assignment</mat-icon>
+      </div>
+      <div class="nav-header__content">
+        <h3 class="nav-header__title">Workflow Progress</h3>
+        <p class="nav-header__subtitle">{{getCompletedStepsCount()}} of {{steps.length}} steps completed</p>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress-bar__fill" [style.width.%]="getProgressPercentage()"></div>
+      </div>
+      <span class="progress-text">{{getProgressPercentage()}}%</span>
+    </div>
+
+    <!-- Steps List -->
+    <div class="nav-steps">
+      <div
+        *ngFor="let step of steps; let i = index; let isLast = last"
+        class="nav-step-wrapper">
+        
+        <!-- Navigation Item -->
+        <div
+          class="nav-item"
+          [ngClass]="{
+            'nav-item--active': isStepActive(step.id),
+            'nav-item--completed': isStepCompleted(step),
+            'nav-item--disabled': !canNavigateToStep(step.id)
+          }"
+          (click)="canNavigateToStep(step.id) ? onStepClick(step.id) : null">
+          
+          <div class="nav-item__indicator">
+            <span class="step-number" *ngIf="!isStepCompleted(step)">{{step.id}}</span>
+            <mat-icon *ngIf="isStepCompleted(step)" class="check-icon">check_circle</mat-icon>
+          </div>
+          
+          <div class="nav-item__content">
+            <h4 class="nav-item__title">{{step.title}}</h4>
+            <p class="nav-item__subtitle">{{step.subtitle}}</p>
+            
+            <!-- Status Badge -->
+            <span class="status-badge" *ngIf="isStepActive(step.id) && !isStepCompleted(step)">
+              In Progress
+            </span>
+            <span class="status-badge status-badge--completed" *ngIf="isStepCompleted(step)">
+              Completed
+            </span>
+          </div>
+
+          <!-- Action Icon -->
+          <div class="nav-item__action" *ngIf="canNavigateToStep(step.id)">
+            <mat-icon>chevron_right</mat-icon>
+          </div>
+        </div>
+
+        <!-- Connector Line -->
+        <div class="step-connector" *ngIf="!isLast" 
+             [ngClass]="{'step-connector--completed': isStepCompleted(step)}">
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Section -->
+    <div class="nav-footer">
+      <button class="nav-footer__button" *ngIf="hasCompletedSteps()">
+        <mat-icon>refresh</mat-icon>
+        Reset Progress
+      </button>
+    </div>
+</nav>

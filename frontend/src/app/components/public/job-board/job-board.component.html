@@ -1,0 +1,96 @@
+<div class="job-board-container">
+  <div class="hero-section">
+    <div class="hero-content">
+      <h1>Find Your Dream Job</h1>
+      <p>Explore thousands of opportunities from top companies</p>
+      
+      <div class="search-bar">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-icon matPrefix>search</mat-icon>
+          <input 
+            matInput 
+            placeholder="Search by job title, company, or location..." 
+            [(ngModel)]="searchTerm"
+            (keyup.enter)="searchJobs()">
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="searchJobs()">
+          Search Jobs
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="jobs-section">
+    <div class="section-header">
+      <h2>Available Positions</h2>
+      <p class="job-count">{{ filteredJobs.length }} jobs found</p>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading" *ngIf="isLoading">
+      <mat-icon>hourglass_empty</mat-icon>
+      <p>Loading jobs...</p>
+    </div>
+
+    <!-- Jobs Grid -->
+    <div class="jobs-grid" *ngIf="!isLoading && filteredJobs.length > 0">
+      <mat-card class="job-card" *ngFor="let job of filteredJobs" (click)="viewJob(job.id)">
+        <mat-card-content>
+          <div class="job-card-header">
+            <div class="company-logo">
+              <mat-icon>business</mat-icon>
+            </div>
+            <div class="job-info">
+              <h3>{{ job.title }}</h3>
+              <p class="company-name">{{ job.company }}</p>
+            </div>
+          </div>
+
+          <div class="job-meta">
+            <div class="meta-item">
+              <mat-icon>location_on</mat-icon>
+              <span>{{ job.location }}</span>
+            </div>
+            <div class="meta-item">
+              <mat-icon>work</mat-icon>
+              <span>{{ job.employmentType }}</span>
+            </div>
+            <div class="meta-item">
+              <mat-icon>trending_up</mat-icon>
+              <span>{{ job.experienceLevel }}</span>
+            </div>
+          </div>
+
+          <div class="job-description-preview">
+            {{ job.description.substring(0, 150) }}...
+          </div>
+
+          <div class="job-card-footer">
+            <mat-chip-set>
+              <mat-chip *ngIf="job.salaryRange">
+                <mat-icon>attach_money</mat-icon>
+                {{ job.salaryRange }}
+              </mat-chip>
+              <mat-chip>{{ getTimeAgo(job.createdAt) }}</mat-chip>
+            </mat-chip-set>
+            
+            <button mat-raised-button color="primary">
+              View Details
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!isLoading && filteredJobs.length === 0">
+      <mat-icon>work_off</mat-icon>
+      <h3>No Jobs Found</h3>
+      <p>Try adjusting your search criteria</p>
+      <button mat-raised-button color="primary" (click)="searchTerm = ''; searchJobs()">
+        Clear Search
+      </button>
+    </div>
+  </div>
+</div>

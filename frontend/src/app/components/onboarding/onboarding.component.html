@@ -1,0 +1,354 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-6">
+  <div class="max-w-7xl mx-auto">
+    
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold text-gray-900 mb-2">🎓 Onboarding & Document Collection</h1>
+      <p class="text-gray-600">Manage employee onboarding process and document collection</p>
+    </div>
+
+    <!-- Alerts -->
+    <div *ngIf="success" class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-lg">
+      <p class="text-green-800">✓ {{ success }}</p>
+    </div>
+    <div *ngIf="error" class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+      <p class="text-red-800">✗ {{ error }}</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="mb-6 border-b border-gray-200">
+      <nav class="flex space-x-4">
+        <button (click)="activeTab = 'eligible'"
+          [class]="activeTab === 'eligible' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600'"
+          class="px-6 py-3 border-b-2 font-medium transition-colors hover:text-blue-600">
+          Eligible Candidates ({{ eligibleCandidates.length }})
+        </button>
+        <button (click)="activeTab = 'onboarding'"
+          [class]="activeTab === 'onboarding' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600'"
+          class="px-6 py-3 border-b-2 font-medium transition-colors hover:text-blue-600">
+          Onboarding Process ({{ onboardings.length }})
+        </button>
+      </nav>
+    </div>
+
+    <!-- ELIGIBLE CANDIDATES TAB -->
+    <div *ngIf="activeTab === 'eligible'">
+      <div class="mb-6">
+        <input type="text" [(ngModel)]="searchTerm" placeholder="Search candidates..."
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <div *ngIf="filteredEligibleCandidates.length === 0" class="text-center py-12 bg-white rounded-lg shadow">
+        <p class="text-gray-500 text-lg">No eligible candidates found</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div *ngFor="let candidate of filteredEligibleCandidates" 
+             class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow p-6">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <h3 class="text-xl font-bold text-gray-900">{{ candidate.candidateName }}</h3>
+              <p class="text-sm text-gray-600">{{ candidate.jobTitle }}</p>
+            </div>
+            <span class="px-3 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Accepted</span>
+          </div>
+          <div class="space-y-2 mb-4 text-sm text-gray-600">
+            <p><strong>Email:</strong> {{ candidate.candidateEmail }}</p>
+            <p><strong>Phone:</strong> {{ candidate.candidatePhone }}</p>
+            <p><strong>Department:</strong> {{ candidate.department }}</p>
+            <p><strong>Joining:</strong> {{ candidate.joiningDate | date: 'dd MMM yyyy' }}</p>
+            <p><strong>CTC:</strong> <span class="text-green-600 font-semibold">₹{{ candidate.annualCtc | number }}</span></p>
+          </div>
+          <button (click)="openCreateModal(candidate)"
+            class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+            Start Onboarding
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ONBOARDING PROCESS TAB -->
+    <div *ngIf="activeTab === 'onboarding'">
+      <!-- Filters -->
+      <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <input type="text" [(ngModel)]="searchTerm" placeholder="Search..."
+          class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        <select [(ngModel)]="statusFilter" class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          <option value="ALL">All Status</option>
+          <option value="PENDING">Pending</option>
+          <option value="DOCUMENTS_SUBMITTED">Documents Submitted</option>
+          <option value="VERIFIED">Verified</option>
+          <option value="COMPLETED">Completed</option>
+        </select>
+        <select [(ngModel)]="stepFilter" class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          <option value="ALL">All Steps</option>
+          <option value="DOCUMENT_COLLECTION">Document Collection</option>
+          <option value="VERIFICATION">Verification</option>
+          <option value="SYSTEM_SETUP">System Setup</option>
+          <option value="ORIENTATION">Orientation</option>
+          <option value="COMPLETED">Completed</option>
+        </select>
+      </div>
+
+      <div *ngIf="filteredOnboardings.length === 0" class="text-center py-12 bg-white rounded-lg shadow">
+        <p class="text-gray-500 text-lg">No onboarding records found</p>
+      </div>
+
+      <div class="space-y-4">
+        <div *ngFor="let onboarding of filteredOnboardings" 
+             class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <div class="flex items-center gap-3 mb-2">
+                <h3 class="text-xl font-bold text-gray-900">{{ onboarding.candidateName }}</h3>
+                <span [class]="onboardingService.getStatusColor(onboarding.status)"
+                      class="px-3 py-1 text-xs font-semibold rounded-full">
+                  {{ onboardingService.formatStatus(onboarding.status) }}
+                </span>
+              </div>
+              <div class="text-sm text-gray-600">
+                <span><strong>ID:</strong> {{ onboarding.employeeId }}</span> | 
+                <span><strong>Job:</strong> {{ onboarding.jobTitle }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <div class="flex justify-between mb-2">
+              <span class="text-sm font-medium">Progress</span>
+              <span class="text-sm font-bold">{{ onboarding.completionPercentage }}%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3">
+              <div [class]="onboardingService.getCompletionColor(onboarding.completionPercentage)"
+                   [style.width.%]="onboarding.completionPercentage"
+                   class="h-3 rounded-full transition-all"></div>
+            </div>
+          </div>
+
+          <div class="flex gap-2">
+            <button (click)="viewDetails(onboarding)"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium">
+              View Details
+            </button>
+            <button (click)="openUpdateModal(onboarding)"
+                    class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm font-medium">
+              Update
+            </button>
+            <button *ngIf="onboarding.status !== 'COMPLETED'"
+                    (click)="completeOnboarding(onboarding)"
+                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium">
+              Complete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CREATE MODAL -->
+<div *ngIf="showCreateModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-lg shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+    <div class="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+      <h2 class="text-2xl font-bold">Start Onboarding</h2>
+      <button (click)="closeCreateModal()" class="text-gray-500 hover:text-gray-700">✕</button>
+    </div>
+    <div class="p-6">
+      <form (ngSubmit)="createOnboarding()">
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-sm font-medium mb-2">Personal Email *</label>
+            <input type="email" [(ngModel)]="createForm.personalEmail" name="personalEmail" required
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Work Location *</label>
+            <input type="text" [(ngModel)]="createForm.workLocation" name="workLocation" required
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Reporting Manager *</label>
+            <input type="text" [(ngModel)]="createForm.reportingManager" name="reportingManager" required
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Probation (months) *</label>
+            <input type="number" [(ngModel)]="createForm.probationPeriod" name="probationPeriod" min="1" max="12" required
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+        </div>
+
+        <h3 class="font-bold mb-3">Emergency Contact *</h3>
+        <div class="grid grid-cols-3 gap-4 mb-4">
+          <div>
+            <label class="block text-sm font-medium mb-2">Name</label>
+            <input type="text" [(ngModel)]="createForm.emergencyContactName" name="emergencyContactName" required
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Phone</label>
+            <input type="tel" [(ngModel)]="createForm.emergencyContactPhone" name="emergencyContactPhone" required
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Relation</label>
+            <input type="text" [(ngModel)]="createForm.emergencyContactRelation" name="emergencyContactRelation" required
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-2">Blood Group</label>
+          <select [(ngModel)]="createForm.bloodGroup" name="bloodGroup"
+            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+            <option [ngValue]="null">Select</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+          </select>
+        </div>
+
+        <div class="flex gap-3">
+          <button type="submit" [disabled]="loading"
+            class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50">
+            {{ loading ? 'Creating...' : 'Create Onboarding' }}
+          </button>
+          <button type="button" (click)="closeCreateModal()"
+            class="px-6 py-3 border rounded-lg hover:bg-gray-50">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- DETAILS MODAL -->
+<div *ngIf="showDetailsModal && selectedOnboarding" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+    <div class="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+      <h2 class="text-2xl font-bold">Onboarding Details</h2>
+      <button (click)="closeDetailsModal()" class="text-gray-500 hover:text-gray-700">✕</button>
+    </div>
+    <div class="p-6">
+      <div class="mb-6">
+        <h3 class="text-lg font-bold mb-3">Required Documents</h3>
+        <div class="space-y-2">
+          <div *ngFor="let doc of getRequiredDocuments(selectedOnboarding)" 
+               class="flex justify-between items-center p-3 border rounded-lg">
+            <div>
+              <p class="font-medium">{{ doc.documentName }}</p>
+              <p class="text-xs text-gray-500">{{ doc.documentType }}</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span *ngIf="doc.isVerified" class="px-3 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">
+                ✓ Verified
+              </span>
+              <span *ngIf="!doc.isVerified && doc.isSubmitted" class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">
+                Pending
+              </span>
+              <span *ngIf="!doc.isSubmitted" class="px-3 py-1 bg-gray-100 text-gray-800 text-xs font-semibold rounded-full">
+                Not Submitted
+              </span>
+              <button *ngIf="!doc.isSubmitted"
+                      (click)="openDocumentModal(selectedOnboarding, doc)"
+                      class="px-3 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700">
+                Upload
+              </button>
+              <button *ngIf="doc.isSubmitted && !doc.isVerified"
+                      (click)="verifyDocument(selectedOnboarding, doc)"
+                      class="px-3 py-1 bg-purple-600 text-white text-xs rounded-lg hover:bg-purple-700">
+                Verify
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button (click)="closeDetailsModal()" class="w-full px-6 py-3 border rounded-lg hover:bg-gray-50">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- DOCUMENT UPLOAD MODAL -->
+<div *ngIf="showDocumentModal && selectedDocument" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-lg shadow-2xl w-full max-w-md">
+    <div class="px-6 py-4 border-b flex justify-between items-center">
+      <h2 class="text-xl font-bold">Upload Document</h2>
+      <button (click)="closeDocumentModal()" class="text-gray-500 hover:text-gray-700">✕</button>
+    </div>
+    <div class="p-6">
+      <p class="text-lg font-bold mb-4">{{ selectedDocument.documentName }}</p>
+      <div class="mb-6">
+        <label class="block text-sm font-medium mb-2">Select File (Max 5MB)</label>
+        <input type="file" (change)="onFileSelected($event)" accept=".pdf,.jpg,.jpeg,.png"
+          class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+        <p *ngIf="selectedFile" class="text-sm text-gray-600 mt-2">
+          {{ selectedFile.name }} ({{ (selectedFile.size / 1024).toFixed(2) }} KB)
+        </p>
+      </div>
+      <div class="flex gap-3">
+        <button (click)="uploadDocument()" [disabled]="!selectedFile || uploadingDocument"
+          class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50">
+          {{ uploadingDocument ? 'Uploading...' : 'Upload' }}
+        </button>
+        <button (click)="closeDocumentModal()" class="px-6 py-3 border rounded-lg hover:bg-gray-50">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- UPDATE MODAL -->
+<div *ngIf="showUpdateModal && selectedOnboarding" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div class="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+      <h2 class="text-2xl font-bold">Update Status</h2>
+      <button (click)="closeUpdateModal()" class="text-gray-500 hover:text-gray-700">✕</button>
+    </div>
+    <div class="p-6">
+      <form (ngSubmit)="updateOnboarding()">
+        <h3 class="font-bold mb-3">System Setup</h3>
+        <div class="space-y-3 mb-6">
+          <label class="flex items-center gap-3">
+            <input type="checkbox" [(ngModel)]="updateForm.emailAccountCreated" name="emailAccountCreated"
+              class="w-5 h-5 text-blue-600 rounded">
+            <span class="text-sm">Email Account Created</span>
+          </label>
+          <label class="flex items-center gap-3">
+            <input type="checkbox" [(ngModel)]="updateForm.systemAccessProvided" name="systemAccessProvided"
+              class="w-5 h-5 text-blue-600 rounded">
+            <span class="text-sm">System Access Provided</span>
+          </label>
+          <label class="flex items-center gap-3">
+            <input type="checkbox" [(ngModel)]="updateForm.idCardIssued" name="idCardIssued"
+              class="w-5 h-5 text-blue-600 rounded">
+            <span class="text-sm">ID Card Issued</span>
+          </label>
+          <label class="flex items-center gap-3">
+            <input type="checkbox" [(ngModel)]="updateForm.orientationCompleted" name="orientationCompleted"
+              class="w-5 h-5 text-blue-600 rounded">
+            <span class="text-sm">Orientation Completed</span>
+          </label>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-2">HR Remarks</label>
+          <textarea [(ngModel)]="updateForm.hrRemarks" name="hrRemarks" rows="3"
+            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+
+        <div class="flex gap-3">
+          <button type="submit" [disabled]="loading"
+            class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50">
+            {{ loading ? 'Updating...' : 'Update' }}
+          </button>
+          <button type="button" (click)="closeUpdateModal()"
+            class="px-6 py-3 border rounded-lg hover:bg-gray-50">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

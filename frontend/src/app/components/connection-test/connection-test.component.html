@@ -1,0 +1,233 @@
+<div class="connection-test-container">
+  <div class="header">
+    <h1>🔧 Connection Test Dashboard</h1>
+    <p class="subtitle">Test your frontend-backend-MongoDB connections</p>
+  </div>
+
+  <!-- Status Overview -->
+  <div class="status-grid">
+    <!-- Backend Status -->
+    <div class="status-card" [ngClass]="backendStatus ? 'status-success' : 'status-error'">
+      <div class="status-icon">
+        <span *ngIf="backendStatus">✅</span>
+        <span *ngIf="!backendStatus">❌</span>
+      </div>
+      <div class="status-info">
+        <h3>Backend Server</h3>
+        <p class="status-text" *ngIf="backendStatus">Connected</p>
+        <p class="status-text" *ngIf="!backendStatus">Disconnected</p>
+        <p class="status-url">http://localhost:8080/api</p>
+      </div>
+    </div>
+
+    <!-- Authentication Status -->
+    <div class="status-card" [ngClass]="isLoggedIn ? 'status-success' : 'status-warning'">
+      <div class="status-icon">
+        <span *ngIf="isLoggedIn">🔐</span>
+        <span *ngIf="!isLoggedIn">🔓</span>
+      </div>
+      <div class="status-info">
+        <h3>Authentication</h3>
+        <p class="status-text" *ngIf="isLoggedIn">Logged In</p>
+        <p class="status-text" *ngIf="!isLoggedIn">Not Logged In</p>
+        <p class="status-role" *ngIf="userRole">Role: {{ userRole }}</p>
+      </div>
+    </div>
+
+    <!-- Token Status -->
+    <div class="status-card" [ngClass]="hasToken ? 'status-success' : 'status-warning'">
+      <div class="status-icon">
+        <span *ngIf="hasToken">🎫</span>
+        <span *ngIf="!hasToken">⚠️</span>
+      </div>
+      <div class="status-info">
+        <h3>JWT Token</h3>
+        <p class="status-text" *ngIf="hasToken">Present</p>
+        <p class="status-text" *ngIf="!hasToken">Missing</p>
+        <p class="status-detail">Stored in localStorage</p>
+      </div>
+    </div>
+
+    <!-- API URL -->
+    <div class="status-card status-info-card">
+      <div class="status-icon">🌐</div>
+      <div class="status-info">
+        <h3>API Endpoint</h3>
+        <p class="status-text">{{ apiUrl }}</p>
+        <p class="status-detail">Proxied to backend</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="actions-section">
+    <h2>🧪 Quick Tests</h2>
+    
+    <div class="action-buttons">
+      <button class="btn btn-primary" (click)="testConnection()">
+        🔄 Test Backend Connection
+      </button>
+      
+      <button class="btn btn-primary" (click)="fetchJobs()">
+        📋 Fetch Jobs List
+      </button>
+      
+      <button class="btn btn-secondary" (click)="checkAuth()">
+        🔐 Check Auth Status
+      </button>
+    </div>
+
+    <!-- Test Results -->
+    <div class="test-results" *ngIf="testResults">
+      <h3>Test Results:</h3>
+      <div class="result-box" [ngClass]="testResults.success ? 'result-success' : 'result-error'">
+        <div *ngIf="testResults.success">
+          <p><strong>✅ Success!</strong></p>
+          <p>Jobs found: {{ testResults.jobCount }}</p>
+          <pre *ngIf="testResults.jobs">{{ testResults.jobs | json }}</pre>
+        </div>
+        <div *ngIf="!testResults.success">
+          <p><strong>❌ Error!</strong></p>
+          <p>{{ testResults.error }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- API Endpoints Reference -->
+  <div class="endpoints-section">
+    <h2>📚 Available API Endpoints</h2>
+    
+    <div class="endpoints-list">
+      <div class="endpoint-card" *ngFor="let endpoint of endpoints">
+        <span class="method-badge" [ngClass]="'method-' + endpoint.method.toLowerCase()">
+          {{ endpoint.method }}
+        </span>
+        <div class="endpoint-info">
+          <code class="endpoint-path">{{ endpoint.path }}</code>
+          <p class="endpoint-description">{{ endpoint.description }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Browser Console Commands -->
+  <div class="console-commands-section">
+    <h2>💻 Browser Console Commands</h2>
+    <p class="console-note">Open DevTools (F12) and paste these commands in the Console tab:</p>
+    
+    <div class="command-block">
+      <h4>Test Job Listing (Public):</h4>
+      <pre class="command-code">fetch('/api/jobs/list').then(r => r.json()).then(console.log)</pre>
+      <button class="btn-copy" (click)="copyToClipboard('fetch(\'/api/jobs/list\').then(r => r.json()).then(console.log)')">
+        📋 Copy
+      </button>
+    </div>
+
+    <div class="command-block">
+      <h4>Check Stored Token:</h4>
+      <pre class="command-code">console.log('Token:', localStorage.getItem('token'))</pre>
+      <button class="btn-copy" (click)="copyToClipboard('console.log(\'Token:\', localStorage.getItem(\'token\'))')">
+        📋 Copy
+      </button>
+    </div>
+
+    <div class="command-block">
+      <h4>Register Test User:</h4>
+      <pre class="command-code">fetch('/api/auth/register', &#123;
+  method: 'POST',
+  headers: &#123; 'Content-Type': 'application/json' &#125;,
+  body: JSON.stringify(&#123;
+    email: 'test&#64;example.com',
+    password: 'Test123!',
+    firstName: 'Test',
+    lastName: 'User',
+    role: 'CANDIDATE',
+    phoneNumber: '9876543210'
+  &#125;)
+&#125;).then(r => r.json()).then(console.log)</pre>
+      <button class="btn-copy" (click)="copyToClipboard(registerCommand)">
+        📋 Copy
+      </button>
+    </div>
+
+    <div class="command-block">
+      <h4>Login Test User:</h4>
+      <pre class="command-code">fetch('/api/auth/login', &#123;
+  method: 'POST',
+  headers: &#123; 'Content-Type': 'application/json' &#125;,
+  body: JSON.stringify(&#123; email: 'test&#64;example.com', password: 'Test123!' &#125;)
+&#125;).then(r => r.json()).then(console.log)</pre>
+      <button class="btn-copy" (click)="copyToClipboard(loginCommand)">
+        📋 Copy
+      </button>
+    </div>
+  </div>
+
+  <!-- Troubleshooting Tips -->
+  <div class="troubleshooting-section">
+    <h2>🔧 Troubleshooting</h2>
+    
+    <div class="tip-card">
+      <h4>❌ Backend Not Connected?</h4>
+      <ul>
+        <li>Ensure backend is running: <code>cd backend && mvn spring-boot:run</code></li>
+        <li>Check if port 8080 is free: <code>netstat -ano | findstr :8080</code></li>
+        <li>Verify MongoDB Atlas IP whitelist includes 0.0.0.0/0</li>
+        <li>Check backend console for errors</li>
+      </ul>
+    </div>
+
+    <div class="tip-card">
+      <h4>🔐 401 Unauthorized Errors?</h4>
+      <ul>
+        <li>Login to get a fresh JWT token (expires after 24 hours)</li>
+        <li>Check token exists: <code>localStorage.getItem('token')</code></li>
+        <li>Clear old token: <code>localStorage.removeItem('token')</code></li>
+      </ul>
+    </div>
+
+    <div class="tip-card">
+      <h4>🌐 CORS Errors?</h4>
+      <ul>
+        <li>Verify proxy.conf.json exists in frontend root</li>
+        <li>Restart frontend server: <code>npm start</code></li>
+        <li>Clear browser cache (Ctrl+Shift+R)</li>
+        <li>Check angular.json has proxyConfig setting</li>
+      </ul>
+    </div>
+
+    <div class="tip-card">
+      <h4>🗄️ MongoDB Connection Failed?</h4>
+      <ul>
+        <li>Check MongoDB Atlas cluster is active (not paused)</li>
+        <li>Verify IP whitelist: <a href="https://cloud.mongodb.com" target="_blank">cloud.mongodb.com</a></li>
+        <li>Test connection string credentials</li>
+        <li>Check backend logs for MongoTimeoutException</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Helpful Links -->
+  <div class="links-section">
+    <h2>📖 Documentation</h2>
+    <div class="links-grid">
+      <a class="link-card" (click)="openDocs('CONNECTION_FIXED.md')">
+        📄 CONNECTION_FIXED.md<br>
+        <span class="link-desc">Complete setup guide</span>
+      </a>
+      <a class="link-card" (click)="openDocs('SETUP_GUIDE.md')">
+        🔧 SETUP_GUIDE.md<br>
+        <span class="link-desc">Detailed troubleshooting</span>
+      </a>
+      <a class="link-card" (click)="openDocs('WORKFLOW_PERSISTENCE_SOLUTION.md')">
+        ✅ WORKFLOW_PERSISTENCE_SOLUTION.md<br>
+        <span class="link-desc">Workflow fixes</span>
+      </a>
+      <a href="https://cloud.mongodb.com" target="_blank" class="link-card">
+        🗄️ MongoDB Atlas<br>
+        <span class="link-desc">Database dashboard</span>
+      </a>
+    </div>
+  </div>
+</div>

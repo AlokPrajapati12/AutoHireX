@@ -1,0 +1,113 @@
+<div class="post-job-container">
+  <h2>📢 Job Posted Successfully</h2>
+  <p class="subtitle">Your job is saved in the SmartHire database.</p>
+
+  <div class="content" *ngIf="jobData">
+
+    <!-- Job Preview Card -->
+    <mat-card class="preview-card">
+      <mat-card-header>
+        <mat-icon class="header-icon">preview</mat-icon>
+        <mat-card-title>Job Summary</mat-card-title>
+        <mat-card-subtitle>This job has been saved to MongoDB</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="job-preview">
+
+          <div class="job-header">
+            <h3>{{ jobData.jobTitle || jobData.title }}</h3>
+            <p class="company">{{ jobData.companyName || jobData.company }}</p>
+          </div>
+
+          <div class="job-meta">
+            <div class="meta-item">
+              <mat-icon>location_on</mat-icon>
+              <span>{{ jobData.location || 'Remote' }}</span>
+            </div>
+
+            <div class="meta-item">
+              <mat-icon>work</mat-icon>
+              <span>{{ jobData.employmentType || 'Full-time' }}</span>
+            </div>
+
+            <div class="meta-item">
+              <mat-icon>trending_up</mat-icon>
+              <span>{{ jobData.experienceLevel || 'Mid' }} Level</span>
+            </div>
+
+            <div class="meta-item" *ngIf="getSalaryRange() !== 'Competitive Salary'">
+              <mat-icon>attach_money</mat-icon>
+              <span>{{ getSalaryRange() }}</span>
+            </div>
+          </div>
+
+          <div class="job-description">
+            <h4>Job Description</h4>
+            <pre>{{ jobData.jobDescription || jobData.description }}</pre>
+          </div>
+
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+
+    <!-- Application URL Section -->
+    <mat-card class="success-card">
+      <mat-card-header>
+        <mat-icon class="header-icon success-icon">check_circle</mat-icon>
+        <mat-card-title>Job Saved Successfully</mat-card-title>
+        <mat-card-subtitle>You can share the candidate application link below</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+
+        <div class="url-section highlight-section">
+          <label>📝 Candidate Application URL:</label>
+          <div class="url-container">
+            <input 
+              type="text"
+              [value]="publicJobUrl"
+              readonly
+              class="url-input"
+            >
+            <button mat-icon-button color="primary" (click)="copyJobUrl()">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+          </div>
+          <p class="hint">Share this link with candidates to collect applications.</p>
+        </div>
+
+        <div class="next-steps">
+          <h4>📋 Next Steps</h4>
+          <ul>
+            <li>Your job has been successfully saved in MongoDB</li>
+            <li>Share the application link with candidates</li>
+            <li>Continue to next step to monitor applications</li>
+          </ul>
+        </div>
+
+        <div class="success-actions">
+          <button mat-raised-button color="primary" (click)="proceedToNext()">
+            <mat-icon>arrow_forward</mat-icon>
+            Continue to Monitor Applications
+          </button>
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
+
+  <!-- No Data Case -->
+  <div *ngIf="!jobData" class="no-data">
+    <mat-icon>warning</mat-icon>
+    <h3>No Job Data Available</h3>
+    <p>Please complete Step 2 before posting</p>
+    <button mat-raised-button color="primary" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Go Back
+    </button>
+  </div>
+</div>
