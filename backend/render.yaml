@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: smart-hire-backend
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: ./
+    envVars:
+      - key: JAVA_OPTS
+        value: "-Xmx512m -Xms256m"
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: SPRING_DATA_MONGODB_URI
+        sync: false
+      - key: SPRING_DATA_MONGODB_DATABASE
+        value: SmartHireDB
+      - key: FASTAPI_BASE_URL
+        sync: false
+      - key: AI_SERVICE_URL
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+    healthCheckPath: /actuator/health

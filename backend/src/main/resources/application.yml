@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: smart-hire-backend
+  
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb+srv://alok992955:AlokKushal9929@smarthiredb.4kbcmmh.mongodb.net/SmartHireDB?retryWrites=true&w=majority&appName=SmartHireDB&tls=true&tlsAllowInvalidCertificates=true}
+      database: ${SPRING_DATA_MONGODB_DATABASE:SmartHireDB}
+      auto-index-creation: true
+  
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+server:
+  port: ${PORT:8080}
+
+# Frontend Configuration
+frontend:
+  url: ${FRONTEND_URL:http://localhost:4200}
+
+# JWT Configuration
+jwt:
+  secret: ${SESSION_SECRET:defaultsecretkey123}
+  expiration: 86400000
+
+# AI Service Configuration
+fastapi:
+  base:
+    url: ${FASTAPI_BASE_URL:http://localhost:5001}
+
+ai:
+  service:
+    url: ${AI_SERVICE_URL:http://localhost:5001}
+
+# Actuator for health checks
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
