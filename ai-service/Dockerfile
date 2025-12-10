@@ -1,44 +1,38 @@
-# Use Python 3.11 slim image
 FROM python:3.11-slim
 
-# Set working directory
 WORKDIR /app
 
-# Install system dependencies
+# Install required system packages
 RUN apt-get update && apt-get install -y \
-    gcc \
-    g++ \
-    make \
-    libpq-dev \
-    curl \
+    gcc g++ make curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first (for better caching)
+# Copy requirements
 COPY requirements.txt .
 
-# Install Python dependencies
+# Install Python deps (CPU-only torch version from new requirements.txt)
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
+# Copy rest of the app
 COPY . .
 
-# Create model cache directory
+# Model cache folder
 RUN mkdir -p /app/model_cache
 
-# Set environment variables
+# Environment vars
 ENV PYTHONUNBUFFERED=1
-ENV PORT=5001
 ENV HF_HOME=/app/model_cache
 ENV TRANSFORMERS_CACHE=/app/model_cache
 ENV SENTENCE_TRANSFORMERS_HOME=/app/model_cache
 
-# Expose port
-EXPOSE 5001
+# Railway PORT (dynamic)
+ENV PORT=$PORT
+EXPOSE $PORT
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:5001/health || exit 1
+  CMD curl -f http://localhost:$PORT/health || exit 1
 
-# Run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5001"]
+# Start application
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "$PORT"]

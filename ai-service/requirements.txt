@@ -32,3 +32,9 @@ soundfile==0.12.1
 
 # --- LANGGRAPH ---
 langgraph==0.0.44
+
+# --- TORCH CPU VERSIONS (REQUIRED FOR RAILWAY / RENDER) ---
+torch==2.2.2+cpu
+torchvision==0.17.2+cpu
+torchaudio==2.2.2+cpu
+--extra-index-url https://download.pytorch.org/whl/cpu
