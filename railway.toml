@@ -1,0 +1,11 @@
+# Railway Configuration for AI Service
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "ai-service/Dockerfile"
+watchPatterns = ["ai-service/**"]
+
+[deploy]
+startCommand = "cd ai-service && uvicorn main:app --host 0.0.0.0 --port ${PORT:-5001}"
+healthcheckPath = "/health"
+healthcheckTimeout = 100
+restartPolicyType = "ON_FAILURE"
