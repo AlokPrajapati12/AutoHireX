@@ -17,16 +17,16 @@ spring:
 server:
   port: ${PORT:8080}
 
-# Frontend Configuration
+# Frontend Configuration (will be updated later)
 frontend:
   url: ${FRONTEND_URL:http://localhost:4200}
 
 # JWT Configuration
 jwt:
-  secret: ${SESSION_SECRET:defaultsecretkey123}
+  secret: ${SESSION_SECRET:defaultsecretkey123456789012345678901234567890}
   expiration: 86400000
 
-# AI Service Configuration
+# AI Service Configuration (will be updated later)
 fastapi:
   base:
     url: ${FASTAPI_BASE_URL:http://localhost:5001}

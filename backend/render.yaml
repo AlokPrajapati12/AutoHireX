@@ -14,10 +14,4 @@ services:
         sync: false
       - key: SPRING_DATA_MONGODB_DATABASE
         value: SmartHireDB
-      - key: FASTAPI_BASE_URL
-        sync: false
-      - key: AI_SERVICE_URL
-        sync: false
-      - key: FRONTEND_URL
-        sync: false
     healthCheckPath: /actuator/health
