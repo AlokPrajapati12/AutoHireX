@@ -39,4 +39,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
   CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
 
 # Start command with dynamic PORT
-CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --timeout-keep-alive 75
+CMD uvicorn main:app --host 0.0.0.0 --port $PORT
